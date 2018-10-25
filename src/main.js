@@ -14,7 +14,7 @@ function initGUI() {
 function verifyFile() {
     console.log("Verifying File...");
 }
-
+// Test commit
 main();
 instructionHandler();
 initGUI();
