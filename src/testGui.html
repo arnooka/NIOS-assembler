@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
     <h1>NIOS II Emulator</h1>
-    <script src="main.js">
-    </script>
     <button style="width: 50px; height: 50px; color: blue" type="button" onclick="alert('test');" > TEST</button>
     <meta charset="UTF-8">
     <title>NIOS II Emulator</title>
+    <link rel="stylesheet" href="global.css">
 </head>
 <body>
-
+    <div id="uploads"></div>
+    <div class="dropzone" id="myDropzone">
+        <input type="file" id="hidden-input" hidden/>
+        <!--<button type="button" id="custom-button">Choose a file</button>-->
+        <span class="dropzoneTxt" id="custom-text">Click here or drag in file to upload</span>
+    </div>
 </body>
 </html>
+
+<script src="main.js"></script>
+<script src="fileHandler.js"></script>
