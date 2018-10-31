@@ -1,4 +1,4 @@
-var asmFile = null;
+var asmfile = null;
 
 // Object instances in main document
 const hiddenInput = document.getElementById('hidden-input');
@@ -42,7 +42,7 @@ var upload = function (files) {
         console.log('Too many files uploaded at once');
         return;
     } else {
-        asmFile = files[0];
+        asmfile = files[0];
     }
     verifyFile();
 };
@@ -54,6 +54,6 @@ customDz.addEventListener('click', function() {
 
 hiddenInput.addEventListener('change', function() {
     var files = hiddenInput.files;
-    asmFile = files[0];
+    asmfile = files[0];
     verifyFile();
 });
