@@ -32,7 +32,7 @@ var r30 = 0;
 var r31 = 0;
 
 
-var values = [[r0];
+
 var i,j;
 
 
