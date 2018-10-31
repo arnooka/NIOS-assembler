@@ -36,7 +36,6 @@ customDz.ondragleave = function () {
 
 // File upload functions
 var upload = function (files) {
-    var formData = new FormData(), xhr = new XMLHttpRequest(), x;
     if (files.length > 1){
         alert('Please upload one file at a time');
         console.log('Too many files uploaded at once');
@@ -53,7 +52,7 @@ customDz.addEventListener('click', function() {
 });
 
 hiddenInput.addEventListener('change', function() {
-    var files = hiddenInput.files;
+    let files = hiddenInput.files;
     asmFile = files[0];
     verifyFile();
 });
