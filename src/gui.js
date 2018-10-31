@@ -1,10 +1,3 @@
-// function addRow() {
-//     var clist = $("#registerValues"); // This reference speeds up the run time
-// // language=HTML
-//     var i;
-//     for (i = 0; i  < 33; i++) {
-//         clist.append(
-//             `<tr><td>register</td>` + "<td>" + 0 + "</tr></td>"
-//         );
-//     }
-// }
+/* This file will provide the functionality of the GUI
+ for displaying updated register values, memory values,
+ and any related the to GUI */
