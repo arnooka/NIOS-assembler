@@ -2,8 +2,10 @@
 
 var testOperand = 'r1, r2, r3';
 var testInstruction = 'add';
+var immediatePresent = false;
+var immediate = null;
 
-identifyIntruction(testInstruction, testOperand);
+// identifyIntruction(testInstruction, testOperand);
 
 function identifyIntruction(instruction, operands) {  //this function will identify an instruction and pass it
 
