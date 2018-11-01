@@ -47,7 +47,7 @@ http.createServer(function (req, res) {
     // if is a directory search for index file matching the extention
     if (fs.statSync(pathname).isDirectory()){
       if (ext == '') ext = '.html';
-      pathname += '/index' + ext;
+      pathname += '/testGui' + ext;
     }
 
     // read file from file system
