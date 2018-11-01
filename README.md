@@ -4,6 +4,13 @@
 
 TODO
 
+### Instructions
+
+- Note: Node.js is required for this project to run. After node is installed, follow the steps below.
+
+1) ([Run](https://ccoenraets.github.io/ionic-tutorial/start-node-server.html)) a node js server in your file directory
+2) In a browser, type localhost:8001 as a URL to run the project
+
 ### Contributors
 
 - Jake Ediger ([jediger51](https://git.unl.edu/jediger51))
