@@ -12,18 +12,13 @@ function initGUI() {
 }
 
 function verifyFile() {
-    console.log("Verifying File '" + file.name + "'");
-    var extension = file.name.toLowerCase().substr((file.name.lastIndexOf('.') + 1));
+    console.log("Verifying File '" + asmFile.name + "'");
+    let extension = asmFile.name.toLowerCase().substr((asmFile.name.lastIndexOf('.') + 1));
     if (!/(asm|txt)$/ig.test(extension)) {
         console.log('Incorrect file type uploaded');
         alert('Please upload a ".txt" or ".asm" file');
         return;
     }
     console.log('Correct file type uploaded');
-    customTxt.innerHTML = file.name;
+    customTxt.innerHTML = asmFile.name;
 }
-// Test commit
-// main();
-// instructionHandler();
-// initGUI();
-// verifyFile();

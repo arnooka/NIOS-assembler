@@ -1,4 +1,4 @@
-var asmfile = null;
+var asmFile = null;
 
 // Object instances in main document
 const hiddenInput = document.getElementById('hidden-input');
@@ -24,7 +24,7 @@ customDz.ondrop = function (event) {
 
 customDz.ondragover = function () {
     this.className = 'dropzone dragover';
-    customTxt.style = 'color: black';
+    //customTxt.style = 'color: crimson';
     return false;
 };
 
@@ -36,13 +36,12 @@ customDz.ondragleave = function () {
 
 // File upload functions
 var upload = function (files) {
-    var formData = new FormData(), xhr = new XMLHttpRequest(), x;
     if (files.length > 1){
         alert('Please upload one file at a time');
         console.log('Too many files uploaded at once');
         return;
     } else {
-        asmfile = files[0];
+        asmFile = files[0];
     }
     verifyFile();
 };
@@ -53,7 +52,7 @@ customDz.addEventListener('click', function() {
 });
 
 hiddenInput.addEventListener('change', function() {
-    var files = hiddenInput.files;
-    asmfile = files[0];
+    let files = hiddenInput.files;
+    asmFile = files[0];
     verifyFile();
 });
