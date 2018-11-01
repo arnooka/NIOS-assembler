@@ -1,14 +1,13 @@
 ## NIOS Emulator
 
-### Introduction
-
-TODO
-
 ### Instructions
 
-- Note: Node.js is required for this project to run. After node is installed, follow the steps below.
+- Note: Node.js is required for this project to run.
+  After node is installed, follow the steps below.
 
-1) Run the server.js file inside the src folder in either Terminal or Command Prompt using the command "node server.js"
+1) In either Terminal or Command prompt, run the server.js file
+	- The file is inside the src folder of the project
+	- The command to run the file is "node server.js"
 2) In a browser, type localhost:8001 as a URL to run the project
 
 ### Contributors
