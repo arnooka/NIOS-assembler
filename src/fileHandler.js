@@ -24,7 +24,7 @@ customDz.ondrop = function (event) {
 
 customDz.ondragover = function () {
     this.className = 'dropzone dragover';
-    customTxt.style = 'color: black';
+    //customTxt.style = 'color: crimson';
     return false;
 };
 
