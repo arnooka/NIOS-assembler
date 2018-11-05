@@ -5,7 +5,7 @@
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="../CSS/global.css">
     <link rel="stylesheet" href="../CSS/gui.css">
-    <h1 id = "h1">NIOS II Emulator</h1>
+    <h1 id="title">NIOS II Emulator</h1>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -15,10 +15,10 @@
     <input type="file" id="hidden-input" style="display: none"/>
     <span class="dropzoneTxt" id="custom-text">Click here or drag in file to upload</span>
 </div>
-<div class = "GUI">
-    <div class = "registerDisplay">
+<div class="GUI">
+    <div class="registerDisplay">
         <table id="registerValues" class="table table-striped carrier-table">
-            <tr  style = " background-color : darkgray "><th>PC</th><th>0</th></tr>
+            <tr  style=" background-color : darkgray "><th>PC</th><th>0</th></tr>
             <tr><th>Register</th><th>Value</th></tr>
             <!--
             <tr><td>r0</td><td>What up bitch</td></tr>
@@ -36,10 +36,10 @@
         </table>
     </div>
 
-    <div class = "buttons">
-        <button  type="button" class="btn btn-default btn-md"  onclick="addRow()" > Run</button>
-        <button  type="button" class="btn btn-default btn-md" onclick="alert('Paused');"> Pause</button>
-        <button id = "restartButton" class="btn btn-default btn-md" type="button" > Restart</button>
+    <div class="buttons">
+        <button type="button" class="btn btn-default btn-md"  onclick="addRow()" > Run</button>
+        <button type="button" class="btn btn-default btn-md" onclick="alert('Paused');"> Pause</button>
+        <button id="restartButton" class="btn btn-default btn-md" type="button" > Restart</button>
     </div>
 
     </table>
