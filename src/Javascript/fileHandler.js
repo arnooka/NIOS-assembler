@@ -1,4 +1,4 @@
-var asmFile = null;
+var asmFile = document.querySelector('input[type="file"]');
 
 // Object instances in main document
 const hiddenInput = document.getElementById('hidden-input');
@@ -53,6 +53,24 @@ customDz.addEventListener('click', function() {
 
 hiddenInput.addEventListener('change', function() {
     let files = hiddenInput.files;
+    //reader.readAsText(asmFile.files[0]);
     asmFile = files[0];
+   //  let files = hiddenInput.files;
+    // const reader = new FileReader();
+    // var name = "";
+    // reader.onload = function () {
+    //     console.log(reader.result.split('\n'));
+    //     name += reader.result.split('\n');
+    //     var nameArr = name.split('\n');
+    //     for (var i = 0; i < 36; i++) {
+    //         console.log("i-Val: "+  i + "|" + nameArr[i]);
+    //     }
+    // }
+    //
+    //asmFile = files[0];
+    // reader.readAsText(asmFile.files[0]);
     verifyFile();
 });
+
+
+
