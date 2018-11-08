@@ -1,21 +1,16 @@
 // This file will handle execution of instructions
 // Instruction Documentation: https://www.intel.com/content/www/us/en/programmable/documentation/iga1420498949526.html#iga1409764012031
 // Omit wrctl, rdctl, eret, trap, wrprs, *io, possibly rdprs
-var testOperand = 'r1, r2, r3';
-var testInstruction = 'add';
-var immediatePresent = false;
-var immediate = null;
 
 var allInstructions = [
     'add', 'and', 'break', 'bret', 'callr', 'cmpeq', 'cmpgei', 'cmpgeu', 'cmplt', 'cmpltu',
-    'cmpne', 'custom', 'div', 'divu', 'flushi', 'flushp', 'initi', 'jmp', 'mov', 'mul', 'mulxss', 'mulxsu',
+    'cmpne', 'custom', 'div', 'divu', 'jmp', 'mov', 'mul', 'mulxss', 'mulxsu',
     'mulxuu', 'nextpc', 'nor', 'or', 'ret', 'rol', 'roli', 'ror', 'sll', 'slli', 'sra', 'srai', 'srl', 'srli',
     'sub', 'sync', 'xor', 'addi', 'andhi', 'andi', 'beq', 'bge', 'bgeu', 'bgt', 'bgtu', 'ble', 'bleu', 'blt', 'bltu', 'bne', 'br',
     'cmpeqi','cmpge', 'cmpgeui', 'cmpgt', 'cmpgti', 'cmpgtu', 'cmpgtui', 'cmple', 'cmplei', 'cmpleu',
-    'cmpleui','cmplti', 'cmpltui', 'cmpnei', 'flushd', 'flushda', 'initd', 'initda', 'ldb', 'ldbu', 'ldh', 'ldhu',
+    'cmpleui','cmplti', 'cmpltui', 'cmpnei', 'ldb', 'ldbu', 'ldh', 'ldhu',
     'ldw', 'movhi', 'movi', 'movia', 'movui', 'muli', 'orhi', 'ori', 'stb', 'sth', 'stw', 'subi', 'xorhi', 'xori', 'call', 'jmpi', 'nop'
 ];
-
 
 /* R TYPE INSTRUCTIONS
 6-bit opcode field
@@ -24,7 +19,7 @@ Three 5-bit register fields A, B, and C
 Instructions marked with * are pseudo-Instructions
 39 Instructions:
 add, and, break, bret, callr, cmpeq, cmpgei, cmpgeu, cmplt, cmpltu,
-cmpne, custom, div, divu, flushi?, flushp, initi?, jmp, *mov, mul, mulxss, mulxsu,
+cmpne, custom, div, divu, jmp, *mov, mul, mulxss, mulxsu,
 mulxuu, nextpc, nor, or, ret, rol, roli?, ror, sll, slli?, sra, srai?, srl, srli?,
 sub, sync, xor,
  */
@@ -35,7 +30,7 @@ function executeRType(Rinstruction) {
         return;
     }
 
-    var intstructionSize =  instructionArr.length;
+    // var intstructionSize =  instructionArr.length;
 
   // identify instruction
     if (Rinstruction === 'add') {        // add rB and rC, and store in rA
@@ -65,12 +60,6 @@ function executeRType(Rinstruction) {
     } else if (Rinstruction === 'div') {
 
     } else if (Rinstruction === 'divu') {
-
-    } else if (Rinstruction === 'flushi') {
-
-    } else if (Rinstruction === 'flushp') {
-
-    } else if (Rinstruction === 'initi') {
 
     } else if (Rinstruction === 'jmp') {
 
@@ -116,6 +105,8 @@ function executeRType(Rinstruction) {
 
     } else if (Rinstruction === 'xor') {
 
+    } else {
+        console.error('R type Execution was called, but it did not match any of the instructions');
     }
 
 }
@@ -129,7 +120,7 @@ Instructions marked with * are pseudo-Instructions
 50 Instructions:
 addi, andhi, andi, beq, bge, bgeu, *bgt, *bgtu, *ble, *bleu, blt, bltu, bne, br,
 cmpeqi,cmpge, cmpgeui, *cmpgt, *cmpgti, *cmpgtu, *cmpgtui, *cmple, *cmplei, *cmpleu,
-*cmpleui,cmplti, cmpltui, cmpnei, flushd, flushda, initd, initda, ldb, ldbu, ldh, ldhu,
+*cmpleui,cmplti, cmpltui, cmpnei, ldb, ldbu, ldh, ldhu,
  ldw, *movhi, *movi, *movia,  *movui, muli, orhi, ori, stb, sth, stw, *subi, xorhi, xori,
  */
 function executeIType(Iinstruction, operands) {
@@ -195,14 +186,6 @@ function executeIType(Iinstruction, operands) {
 
     } else if (Iinstruction === 'cmpnei') {
 
-    } else if (Iinstruction === 'flushd') {
-
-    } else if (Iinstruction === 'flushda') {
-
-    } else if (Iinstruction === 'initd') {
-
-    } else if (Iinstruction === 'initda') {
-
     } else if (Iinstruction === 'ldb') {
 
     } else if (Iinstruction === 'ldbu') {
@@ -239,6 +222,8 @@ function executeIType(Iinstruction, operands) {
 
     } else if (Iinstruction === 'xori') {
 
+    } else {
+        console.error('I type Execution was called, but it did not match any of the instructions');
     }
 
 }
@@ -260,6 +245,8 @@ function executeJType(Jinstruction, operands) {
 
     } else if (Jinstruction === 'jmpi') {
 
+    } else  {
+        console.error('J type Execution was called, but it did not match any of the instructions');
     }
 
 }
