@@ -6,6 +6,16 @@ var testInstruction = 'add';
 var immediatePresent = false;
 var immediate = null;
 
+var allInstructions = [
+    'add', 'and', 'break', 'bret', 'callr', 'cmpeq', 'cmpgei', 'cmpgeu', 'cmplt', 'cmpltu',
+    'cmpne', 'custom', 'div', 'divu', 'flushi', 'flushp', 'initi', 'jmp', 'mov', 'mul', 'mulxss', 'mulxsu',
+    'mulxuu', 'nextpc', 'nor', 'or', 'ret', 'rol', 'roli', 'ror', 'sll', 'slli', 'sra', 'srai', 'srl', 'srli',
+    'sub', 'sync', 'xor', 'addi', 'andhi', 'andi', 'beq', 'bge', 'bgeu', 'bgt', 'bgtu', 'ble', 'bleu', 'blt', 'bltu', 'bne', 'br',
+    'cmpeqi','cmpge', 'cmpgeui', 'cmpgt', 'cmpgti', 'cmpgtu', 'cmpgtui', 'cmple', 'cmplei', 'cmpleu',
+    'cmpleui','cmplti', 'cmpltui', 'cmpnei', 'flushd', 'flushda', 'initd', 'initda', 'ldb', 'ldbu', 'ldh', 'ldhu',
+    'ldw', 'movhi', 'movi', 'movia', 'movui', 'muli', 'orhi', 'ori', 'stb', 'sth', 'stw', 'subi', 'xorhi', 'xori', 'call', 'jmpi', 'nop'
+];
+
 
 /* R TYPE INSTRUCTIONS
 6-bit opcode field
@@ -18,91 +28,93 @@ cmpne, custom, div, divu, flushi?, flushp, initi?, jmp, *mov, mul, mulxss, mulxs
 mulxuu, nextpc, nor, or, ret, rol, roli?, ror, sll, slli?, sra, srai?, srl, srli?,
 sub, sync, xor,
  */
-function executeRType(instruction, operands) {
+function executeRType(Rinstruction) {
 
-    if(!instruction) {
-        console.log('No instruction passed to execute R Type');
+    if(!Rinstruction || Rinstruction === '') {
+        console.log('No instruction passed to execute R Type, stopping execution');
         return;
     }
 
+    var intstructionSize =  instructionArr.length;
+
   // identify instruction
-    if (instruction == 'add') {
+    if (Rinstruction === 'add') {        // add rB and rC, and store in rA
 
-    } else if (instruction == 'and') {
+    } else if (Rinstruction === 'and') {
 
-    } else if (instruction == 'break') {
+    } else if (Rinstruction === 'break') {
 
-    } else if (instruction == 'bret') {
+    } else if (Rinstruction === 'bret') {
 
-    } else if (instruction == 'callr') {
+    } else if (Rinstruction === 'callr') {
 
-    } else if (instruction == 'cmpeq') {
+    } else if (Rinstruction === 'cmpeq') {
 
-    } else if (instruction == 'cmpgei') {
+    } else if (Rinstruction === 'cmpgei') {
 
-    } else if (instruction == 'cmpgeu') {
+    } else if (Rinstruction === 'cmpgeu') {
 
-    } else if (instruction == 'cmplt') {
+    } else if (Rinstruction === 'cmplt') {
 
-    } else if (instruction == 'cmpltu') {
+    } else if (Rinstruction === 'cmpltu') {
 
-    } else if (instruction == 'cmpne') {
+    } else if (Rinstruction === 'cmpne') {
 
-    } else if (instruction == 'custom') {
+    } else if (Rinstruction === 'custom') {
 
-    } else if (instruction == 'div') {
+    } else if (Rinstruction === 'div') {
 
-    } else if (instruction == 'divu') {
+    } else if (Rinstruction === 'divu') {
 
-    } else if (instruction == 'flushi') {
+    } else if (Rinstruction === 'flushi') {
 
-    } else if (instruction == 'flushp') {
+    } else if (Rinstruction === 'flushp') {
 
-    } else if (instruction == 'initi') {
+    } else if (Rinstruction === 'initi') {
 
-    } else if (instruction == 'jmp') {
+    } else if (Rinstruction === 'jmp') {
 
-    } else if (instruction == 'mov') {
+    } else if (Rinstruction === 'mov') {
 
-    } else if (instruction == 'mul') {
+    } else if (Rinstruction === 'mul') {
 
-    } else if (instruction == 'mulxss') {
+    } else if (Rinstruction === 'mulxss') {
 
-    } else if (instruction == 'mulxsu') {
+    } else if (Rinstruction === 'mulxsu') {
 
-    } else if (instruction == 'mulxuu') {
+    } else if (Rinstruction === 'mulxuu') {
 
-    } else if (instruction == 'nextpc') {
+    } else if (Rinstruction === 'nextpc') {
 
-    } else if (instruction == 'nor') {
+    } else if (Rinstruction === 'nor') {
 
-    } else if (instruction == 'or') {
+    } else if (Rinstruction === 'or') {
 
-    } else if (instruction == 'ret') {
+    } else if (Rinstruction === 'ret') {
 
-    } else if (instruction == 'rol') {
+    } else if (Rinstruction === 'rol') {
 
-    } else if (instruction == 'roli') {
+    } else if (Rinstruction === 'roli') {
 
-    } else if (instruction == 'ror') {
+    } else if (Rinstruction === 'ror') {
 
-    } else if (instruction == 'sll') {
+    } else if (Rinstruction === 'sll') {
 
-    } else if (instruction == 'slli') {
+    } else if (Rinstruction === 'slli') {
 
-    } else if (instruction == 'sra') {
+    } else if (Rinstruction === 'sra') {
 
-    } else if (instruction == 'srai') {
+    } else if (Rinstruction === 'srai') {
 
-    } else if (instruction == 'srl') {
+    } else if (Rinstruction === 'srl') {
 
-    } else if (instruction == 'srli') {
+    } else if (Rinstruction === 'srli') {
 
-    } else if (instruction == 'sub') {
+    } else if (Rinstruction === 'sub') {
 
-    } else if (instruction == 'sync') {
+    } else if (Rinstruction === 'sync') {
 
-    } else if (instruction == 'xor') {
+    } else if (Rinstruction === 'xor') {
 
     }
 
@@ -120,112 +132,112 @@ cmpeqi,cmpge, cmpgeui, *cmpgt, *cmpgti, *cmpgtu, *cmpgtui, *cmple, *cmplei, *cmp
 *cmpleui,cmplti, cmpltui, cmpnei, flushd, flushda, initd, initda, ldb, ldbu, ldh, ldhu,
  ldw, *movhi, *movi, *movia,  *movui, muli, orhi, ori, stb, sth, stw, *subi, xorhi, xori,
  */
-function executeIType(instruction, operands) {
+function executeIType(Iinstruction, operands) {
 
-    if(!instruction) {
+    if(!Iinstruction) {
         console.log('No instruction passed to execute I Type');
         return;
     }
 
-    if (instruction === 'addi') {
+    if (Iinstruction === 'addi') {
 
-    } else if (instruction == 'andhi') {
+    } else if (Iinstruction === 'andhi') {
 
-    } else if (instruction == 'andi') {
+    } else if (Iinstruction === 'andi') {
 
-    } else if (instruction == 'beq') {
+    } else if (Iinstruction === 'beq') {
 
-    } else if (instruction == 'bge') {
+    } else if (Iinstruction === 'bge') {
 
-    } else if (instruction == 'bgeu') {
+    } else if (Iinstruction === 'bgeu') {
 
-    } else if (instruction == 'bgt') {
+    } else if (Iinstruction === 'bgt') {
 
-    } else if (instruction == 'bgtu') {
+    } else if (Iinstruction === 'bgtu') {
 
-    } else if (instruction == 'ble') {
+    } else if (Iinstruction === 'ble') {
 
-    } else if (instruction == 'bleu') {
+    } else if (Iinstruction === 'bleu') {
 
-    } else if (instruction == 'blt') {
+    } else if (Iinstruction === 'blt') {
 
-    } else if (instruction == 'bltu') {
+    } else if (Iinstruction === 'bltu') {
 
-    } else if (instruction == 'bne') {
+    } else if (Iinstruction === 'bne') {
 
-    } else if (instruction == 'br') {
+    } else if (Iinstruction === 'br') {
 
-    } else if (instruction == 'cmpeqi') {
+    } else if (Iinstruction === 'cmpeqi') {
 
-    } else if (instruction == 'cmpge') {
+    } else if (Iinstruction === 'cmpge') {
 
-    } else if (instruction == 'cmpgeui') {
+    } else if (Iinstruction === 'cmpgeui') {
 
-    } else if (instruction == 'cmpgt') {
+    } else if (Iinstruction === 'cmpgt') {
 
-    } else if (instruction == 'cmpgti') {
+    } else if (Iinstruction === 'cmpgti') {
 
-    } else if (instruction == 'cmpgtu') {
+    } else if (Iinstruction === 'cmpgtu') {
 
-    } else if (instruction == 'cmpgtui') {
+    } else if (Iinstruction === 'cmpgtui') {
 
-    } else if (instruction == 'cmple') {
+    } else if (Iinstruction === 'cmple') {
 
-    } else if (instruction == 'cmplei') {
+    } else if (Iinstruction === 'cmplei') {
 
-    } else if (instruction == 'cmpleu') {
+    } else if (Iinstruction === 'cmpleu') {
 
-    } else if (instruction == 'cmpleui') {
+    } else if (Iinstruction === 'cmpleui') {
 
-    } else if (instruction == 'cmplti') {
+    } else if (Iinstruction === 'cmplti') {
 
-    } else if (instruction == 'cmpltui') {
+    } else if (Iinstruction === 'cmpltui') {
 
-    } else if (instruction == 'cmpnei') {
+    } else if (Iinstruction === 'cmpnei') {
 
-    } else if (instruction == 'flushd') {
+    } else if (Iinstruction === 'flushd') {
 
-    } else if (instruction == 'flushda') {
+    } else if (Iinstruction === 'flushda') {
 
-    } else if (instruction == 'initd') {
+    } else if (Iinstruction === 'initd') {
 
-    } else if (instruction == 'initda') {
+    } else if (Iinstruction === 'initda') {
 
-    } else if (instruction == 'ldb') {
+    } else if (Iinstruction === 'ldb') {
 
-    } else if (instruction == 'ldbu') {
+    } else if (Iinstruction === 'ldbu') {
 
-    } else if (instruction == 'ldh') {
+    } else if (Iinstruction === 'ldh') {
 
-    } else if (instruction == 'ldhu') {
+    } else if (Iinstruction === 'ldhu') {
 
-    } else if (instruction == 'ldw') {
+    } else if (Iinstruction === 'ldw') {
 
-    } else if (instruction == 'movhi') {
+    } else if (Iinstruction === 'movhi') {
 
-    } else if (instruction == 'movi') {
+    } else if (Iinstruction === 'movi') {
 
-    } else if (instruction == 'movia') {
+    } else if (Iinstruction === 'movia') {
 
-    } else if (instruction == 'movui') {
+    } else if (Iinstruction === 'movui') {
 
-    } else if (instruction == 'muli') {
+    } else if (Iinstruction === 'muli') {
 
-    } else if (instruction == 'orhi') {
+    } else if (Iinstruction === 'orhi') {
 
-    } else if (instruction == 'ori') {
+    } else if (Iinstruction === 'ori') {
 
-    } else if (instruction == 'stb') {
+    } else if (Iinstruction === 'stb') {
 
-    } else if (instruction == 'sth') {
+    } else if (Iinstruction === 'sth') {
 
-    } else if (instruction == 'stw') {
+    } else if (Iinstruction === 'stw') {
 
-    } else if (instruction == 'subi') {
+    } else if (Iinstruction === 'subi') {
 
-    } else if (instruction == 'xorhi') {
+    } else if (Iinstruction === 'xorhi') {
 
-    } else if (instruction == 'xori') {
+    } else if (Iinstruction === 'xori') {
 
     }
 
@@ -238,31 +250,31 @@ function executeIType(instruction, operands) {
 Instructions:
 call, jmpi,
  */
-function executeJType(instruction, operands) {
-    if (!instruction) {
+function executeJType(Jinstruction, operands) {
+    if (!Jinstruction) {
         console.log('No instruction passed to execute J Type');
         return;
     }
 
-    if (instruction == 'call') {
+    if (Jinstruction === 'call') {
 
-    } else if (instruction == 'jmpi') {
+    } else if (Jinstruction === 'jmpi') {
 
     }
 
 }
 
-/* might be used to deal with instructions that don't fit the types or for pseudo-Instructions
+/* Might be used to deal with instructions that don't fit the types or for pseudo-Instructions
 Instructions:
 nop,
 * */
-function executeOther(instruction, operands) {
-    if (!instruction) {
+function executeOther(Oinstruction, operands) {
+    if (!Oinstruction) {
         console.log('No instruction passed to execute other');
         return;
     }
 
-    if (instruction == 'nop') {
-        return;
+    if (Oinstruction === 'nop') {
+        // do nothing?
     }
 }

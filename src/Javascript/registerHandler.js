@@ -24,12 +24,12 @@ var r22 = 0;
 var r23 = 0;
 var r24 = 0;
 var r25 = 0;
-var r26 = 0;
-var r27 = 0;
-var r28 = 0;
-var r29 = 0;
-var r30 = 0;
-var r31 = 0;
+var r26 = 0; // Global pointer
+var r27 = 0; // Stack pointer
+var r28 = 0; // Frame pointer
+var r29 = 0; // Exception return address
+var r30 = 0; // Status register
+var r31 = 0; // return address
 
 
 
