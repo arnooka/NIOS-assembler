@@ -2,7 +2,16 @@ const dict = new Map([['add','r'], ['addi','i'], ['and','r'], ['andhi','i'], ['a
 ['bgeu','i'], ['bgt','i'], ['bgtu','i'], ['ble','i'], ['bleu','i'], ['blt','i'], ['bltu','i'], ['bne','i'], ['br','i'],
 ['break','r'], ['bret','r'], ['call','j'], ['callr','r'], ['cmpeq','r'], ['cmpeqi','i'], ['cmpge','r'], ['cmpgei','i'],
 ['cmpgeu','r'], ['cmpgeui','i'], ['cmpgt','r'], ['cmpgti','i'], ['cmpgtu','r'], ['cmpgtui','i'], ['cmple','r'],
-['cmplei','i']
+['cmplei','i'], ['cmpleu','r'], ['cmpleui','i'], ['cmplt','r'], ['cmplti','i'], ['cmpltu','r'], ['cmpltui','i'],
+['cmpne','r'], ['cmpnei','i'], ['custom','n'], ['div','r'], ['divu','r'], ['eret','r'], ['flushd','i'], ['flushda','i'],
+['flushi','r'], ['flushp','r'], ['initd','i'], ['initda','i'], ['initi','r'], ['jmp','r'], ['jmpi','j'], ['ldb','i'],
+['ldbio','i'], ['ldbu','i'], ['ldbuio','i'], ['ldh','i'], ['ldhio','i'], ['ldhu','i'], ['ldhuio','i'], ['ldw','i'],
+['ldwio','i'], ['mov','r'], ['movhi','i'], ['movi','i'], ['movia','i'], ['movui','i'], ['mul','r'], ['muli','i'],
+['mulxss','r'], ['mulxsu','r'], ['mulxuu','r'], ['nextpc','r'], ['nop','r'], ['nor','r'], ['or','r'], ['orhi','i'],
+['ori','i'], ['rdctl','r'], ['rdprs','i'], ['ret','r'], ['rol','r'], ['roli','i'], ['ror','r'], ['sll','r'],
+['slli','i'], ['sra','r'], ['srai','i'], ['srl','r'], ['srli','i'], ['stb','i'], ['stbio','i'], ['sth','i'],
+['sthio','i'], ['stw','i'],['stwio','i'], ['sub','r'], ['subi','i'], ['sync','r'], ['trap','r'], ['wrctl','r'],
+['wrprs','r'], ['xor','r'], ['xorhi','i'], ['xori','i']
 ]);
 
 var asmFile = document.querySelector('input[type="file"]');
