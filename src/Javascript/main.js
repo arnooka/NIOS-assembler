@@ -12,7 +12,7 @@ function initGUI() {
 }
 
 function verifyFile() {
-
+    // Verify correct file type
     console.log("Verifying File '" + asmFile.name + "'");
     let extension = asmFile.name.toLowerCase().substr((asmFile.name.lastIndexOf('.') + 1));
     if (!/(asm|txt)$/ig.test(extension)) {
@@ -23,23 +23,23 @@ function verifyFile() {
     console.log('Correct file type uploaded');
     customTxt.innerHTML = asmFile.name;
 
+    // Begin reading file
     const reader = new FileReader();
     var name = "";
     reader.onload = function () {
         console.log(reader.result.split('\n'));
-        name += reader.result.split('\n');
-        alert("hello");
-        var nameArr = name.split('\t');
-            nameArr = name.split(',');
-        for (var i = 0; i < 36; i++) {
+        name += reader.result.replace(/,/g, ';').split('\n');
+        var nameArr = name.split(',');
+        for (var i = 0; i < nameArr.length; i++) {
+            nameArr[i] = nameArr[i].replace(/;/g, ',').trim();
+            nameArr[i] = nameArr[i].replace(/\t/g, ',');
+            nameArr[i] = nameArr[i].replace(/ /g, '');
             console.log("i-Val: "+  i + "|" + nameArr[i]);
+            var instruction = nameArr[i].split(',');
+            // find instruction here
         }
-    }
-
+    };
 
     reader.readAsText(asmFile);
-
     console.log(customTxt.innerHTML);
-
-
 }

@@ -1,3 +1,10 @@
+const dict = new Map([['add','r'], ['addi','i'], ['and','r'], ['andhi','i'], ['andi','i'], ['beq','i'], ['bge','i'],
+['bgeu','i'], ['bgt','i'], ['bgtu','i'], ['ble','i'], ['bleu','i'], ['blt','i'], ['bltu','i'], ['bne','i'], ['br','i'],
+['break','r'], ['bret','r'], ['call','j'], ['callr','r'], ['cmpeq','r'], ['cmpeqi','i'], ['cmpge','r'], ['cmpgei','i'],
+['cmpgeu','r'], ['cmpgeui','i'], ['cmpgt','r'], ['cmpgti','i'], ['cmpgtu','r'], ['cmpgtui','i'], ['cmple','r'],
+['cmplei','i']
+]);
+
 var asmFile = document.querySelector('input[type="file"]');
 
 // Object instances in main document
@@ -53,22 +60,7 @@ customDz.addEventListener('click', function() {
 
 hiddenInput.addEventListener('change', function() {
     let files = hiddenInput.files;
-    //reader.readAsText(asmFile.files[0]);
     asmFile = files[0];
-   //  let files = hiddenInput.files;
-    // const reader = new FileReader();
-    // var name = "";
-    // reader.onload = function () {
-    //     console.log(reader.result.split('\n'));
-    //     name += reader.result.split('\n');
-    //     var nameArr = name.split('\n');
-    //     for (var i = 0; i < 36; i++) {
-    //         console.log("i-Val: "+  i + "|" + nameArr[i]);
-    //     }
-    // }
-    //
-    //asmFile = files[0];
-    // reader.readAsText(asmFile.files[0]);
     verifyFile();
 });
 
