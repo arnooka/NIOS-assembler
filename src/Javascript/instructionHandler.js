@@ -282,16 +282,17 @@ function executeOther(Oinstruction, operands) {
 function executeInstruction() {
     // most r types: mem[PC][1] mem[x] = {0x111, [add, r1,r2,r3]}, access 'add' by  mem[PC][1][0]
     // Get Instruction from mem by going to PC
-    var currentInstruction = mem[PC][1][0];
+    var currentInstruction = mem[pc][1][0];
     if (!currentInstruction) {
         console.log('Failure to retrieve instruction from memory in InstructionHandler');
     }
 
     // Basic R type vars
-    var rA = toHex(mem[PC][1][1]);
-    var rB = toHex(mem[PC][1][2]);
-    var rC = toHex(mem[PC][1][3]);
+    var rA = toHex(mem[pc][1][1]);
+    var rB = toHex(mem[pc][1][2]);
+    var rC = toHex(mem[pc][1][3]);
     // var registerAddress = toHex(rA);
+    var immediate = mem[pc][1][1];
 
     //R types ---------------------------------------------------------------------------
     if (currentInstruction === 'add') {        // add rB and rC, and store in rA
@@ -305,7 +306,7 @@ function executeInstruction() {
     } else if (currentInstruction === 'bret') {
         //breakpoint return, so resume execution?
     } else if (currentInstruction === 'callr') {
-        mem[0x1f][0] = PC + 1;
+        mem[0x1f][0] = pc + 1;
         return rA;
     } else if (currentInstruction === 'cmpeq') {
         if (mem[rB][0] == mem[rC][0]) {
@@ -318,14 +319,25 @@ function executeInstruction() {
     } else if (currentInstruction === 'cmpgeu') {
 
     } else if (currentInstruction === 'cmplt') {
-
+        if (mem[rB][0] < mem[rC][0]) {
+            mem[rA][0] = 1;
+        } else {
+            mem[rA][0] = 0;
+        }
     } else if (currentInstruction === 'cmpltu') {
 
     } else if (currentInstruction === 'cmpne') {
-
+        if (mem[rB][0] != mem[rC][0]) {
+            mem[rA][0] = 1;
+        } else {
+            mem[rA][0] = 0;
+        }
     } else if (currentInstruction === 'custom') {
 
     } else if (currentInstruction === 'div') {
+        if(mem[rC][0] === 0) { //can't divide by 0
+            // TODO: need to return some sort of error status
+        }
         mem[rA][0] = mem[rB][0] / mem[rC][0];
         return 1;
     } else if (currentInstruction === 'divu') {
@@ -333,7 +345,7 @@ function executeInstruction() {
     } else if (currentInstruction === 'jmp') {
         return mem[rA][0];
     } else if (currentInstruction === 'mov') {
-
+        mem[rA][0] = mem[rB][0];
     } else if (currentInstruction === 'mul') {
         mem[rA][0] = mem[rB][0] * mem[rC][0];
     } else if (currentInstruction === 'mulxss') {
@@ -343,7 +355,8 @@ function executeInstruction() {
     } else if (currentInstruction === 'mulxuu') {
 
     } else if (currentInstruction === 'nextpc') {
-
+        // puts the address of the next instruction in rA;
+        mem[rA][0] = toHex(pc+1);
     } else if (currentInstruction === 'nor') {
         mem[rA][0] = mem[rB][0] | mem[rC][0];
         mem[rA][0] = ~mem[rA][0];
@@ -352,7 +365,8 @@ function executeInstruction() {
         mem[rA][0] = mem[rB][0] | mem[rC][0];
         return 1;
     } else if (currentInstruction === 'ret') {
-
+        // return to address at r31
+        return mem[0x1F][0];
     } else if (currentInstruction === 'rol') {
 
     } else if (currentInstruction === 'roli') {
@@ -365,7 +379,7 @@ function executeInstruction() {
     } else if (currentInstruction === 'slli') {
 
     } else if (currentInstruction === 'sra') {
-
+        mem[rA][0] = mem[rB][0] >> mem[rC][0];
     } else if (currentInstruction === 'srai') {
 
     } else if (currentInstruction === 'srl') {
@@ -390,27 +404,47 @@ function executeInstruction() {
     } else if (currentInstruction === 'andi') {
 
     } else if (currentInstruction === 'beq') {
-
+        if (mem[rA][0] == mem[rB][0]) {
+            // TODO Return address of Label from map
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'bge') {
 
     } else if (currentInstruction === 'bgeu') {
 
     } else if (currentInstruction === 'bgt') {
-
+        if(mem[rA][0] >= mem[rB][0]) {
+            //TODO: set pc to label from map
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'bgtu') {
 
     } else if (currentInstruction === 'ble') {
-
+        if(mem[rA][0] <= mem[rB][0]) {
+            //TODO: set pc to label from map
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'bleu') {
 
     } else if (currentInstruction === 'blt') {
-
+        if(mem[rA][0] < mem[rB][0]) {
+            //TODO: set pc to label from map
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'bltu') {
 
     } else if (currentInstruction === 'bne') {
-
+        if(mem[rA][0] != mem[rB][0]) {
+            //TODO: return label from map
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'br') {
-
+        // TODO: get label from map and return it
     } else if (currentInstruction === 'cmpeqi') {
 
     } else if (currentInstruction === 'cmpge') {
@@ -419,6 +453,7 @@ function executeInstruction() {
         } else {
             mem[rA][0] = 0;
         }
+        return 1;
     } else if (currentInstruction === 'cmpgeui') {
 
     } else if (currentInstruction === 'cmpgt') {
@@ -486,9 +521,11 @@ function executeInstruction() {
     }
     // J Types --------------------------------------------------------------------------------------------
     else if (currentInstruction === 'call') {
-        // Use map to return address of label in instruction
+        // Use map to return address of label in instruction, set r31 to pc + 1;
+        mem[0x1F][0] = pc+1;
+        // TODO: get label from map
     } else if (currentInstruction === 'jmpi') {
-
+            return immediate;
     } else if (currentInstruction === 'nop') {
         return 1;
     } else {
