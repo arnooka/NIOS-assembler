@@ -1,3 +1,19 @@
+const dict = new Map([['add','r'], ['addi','i'], ['and','r'], ['andhi','i'], ['andi','i'], ['beq','i'], ['bge','i'],
+['bgeu','i'], ['bgt','i'], ['bgtu','i'], ['ble','i'], ['bleu','i'], ['blt','i'], ['bltu','i'], ['bne','i'], ['br','i'],
+['break','r'], ['bret','r'], ['call','j'], ['callr','r'], ['cmpeq','r'], ['cmpeqi','i'], ['cmpge','r'], ['cmpgei','i'],
+['cmpgeu','r'], ['cmpgeui','i'], ['cmpgt','r'], ['cmpgti','i'], ['cmpgtu','r'], ['cmpgtui','i'], ['cmple','r'],
+['cmplei','i'], ['cmpleu','r'], ['cmpleui','i'], ['cmplt','r'], ['cmplti','i'], ['cmpltu','r'], ['cmpltui','i'],
+['cmpne','r'], ['cmpnei','i'], ['custom','n'], ['div','r'], ['divu','r'], ['eret','r'], ['flushd','i'], ['flushda','i'],
+['flushi','r'], ['flushp','r'], ['initd','i'], ['initda','i'], ['initi','r'], ['jmp','r'], ['jmpi','j'], ['ldb','i'],
+['ldbio','i'], ['ldbu','i'], ['ldbuio','i'], ['ldh','i'], ['ldhio','i'], ['ldhu','i'], ['ldhuio','i'], ['ldw','i'],
+['ldwio','i'], ['mov','r'], ['movhi','i'], ['movi','i'], ['movia','i'], ['movui','i'], ['mul','r'], ['muli','i'],
+['mulxss','r'], ['mulxsu','r'], ['mulxuu','r'], ['nextpc','r'], ['nop','n'], ['nor','r'], ['or','r'], ['orhi','i'],
+['ori','i'], ['rdctl','r'], ['rdprs','i'], ['ret','r'], ['rol','r'], ['roli','i'], ['ror','r'], ['sll','r'],
+['slli','i'], ['sra','r'], ['srai','i'], ['srl','r'], ['srli','i'], ['stb','i'], ['stbio','i'], ['sth','i'],
+['sthio','i'], ['stw','i'],['stwio','i'], ['sub','r'], ['subi','i'], ['sync','r'], ['trap','r'], ['wrctl','r'],
+['wrprs','r'], ['xor','r'], ['xorhi','i'], ['xori','i']
+]);
+
 var asmFile = document.querySelector('input[type="file"]');
 
 // Object instances in main document
@@ -53,22 +69,7 @@ customDz.addEventListener('click', function() {
 
 hiddenInput.addEventListener('change', function() {
     let files = hiddenInput.files;
-    //reader.readAsText(asmFile.files[0]);
     asmFile = files[0];
-   //  let files = hiddenInput.files;
-    // const reader = new FileReader();
-    // var name = "";
-    // reader.onload = function () {
-    //     console.log(reader.result.split('\n'));
-    //     name += reader.result.split('\n');
-    //     var nameArr = name.split('\n');
-    //     for (var i = 0; i < 36; i++) {
-    //         console.log("i-Val: "+  i + "|" + nameArr[i]);
-    //     }
-    // }
-    //
-    //asmFile = files[0];
-    // reader.readAsText(asmFile.files[0]);
     verifyFile();
 });
 

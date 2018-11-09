@@ -1,6 +1,7 @@
-// Main Class
-var nameArr = [];
-var tempArr = [];
+// IMPORTANT GLOBALS
+const pc = 1;
+// IMPORTANT GLOBALS
+
 function main() {
     console.log("Hello World!");
 }
@@ -14,7 +15,7 @@ function initGUI() {
 }
 
 function verifyFile() {
-
+    // Verify correct file type
     console.log("Verifying File '" + asmFile.name + "'");
     let extension = asmFile.name.toLowerCase().substr((asmFile.name.lastIndexOf('.') + 1));
     if (!/(asm|txt)$/ig.test(extension)) {
@@ -25,40 +26,37 @@ function verifyFile() {
     console.log('Correct file type uploaded');
     customTxt.innerHTML = asmFile.name;
 
+    // Begin reading file
     const reader = new FileReader();
     var name = "";
-    var name2 = "";
     reader.onload = function () {
-        console.log(reader.result.replace(/\s/g, ' ').split(' '));
-        name2 += reader.result.replace(/\s/g, ' ').split(' ');
-        tempArr = name2.split(',');
-        var temp = tempArr.filter(function (el) {
-            return el != null;
-        });
-        //tempArr = name2.split('');
-        console.log("HELLBITCH" + temp);
-        name += reader.result.split('\n');
-        alert("hello");
-            nameArr = name.split('\t');
-            nameArr = name.split(',');
-        for (var i = 0; i < tempArr.length; i++) {
-            if (tempArr[i] == "") {
-                tempArr.splice(i, 1);
-                i--;
+        console.log(reader.result.split('\n'));
+        name += reader.result.replace(/,/g, ';').split('\n');
+        var nameArr = name.split(',');
+        var tempArr = nameArr;
+        for (var i = 0; i < nameArr.length; i++) {
+            nameArr[i] = nameArr[i].replace(/;/g, ',').trim();
+            nameArr[i] = nameArr[i].replace(/\t/g, ',');
+            nameArr[i] = nameArr[i].replace(/ /g, '');
+            console.log("i-Val: "+  i + "|" + nameArr[i]);
+            var instruction = nameArr[i].split(',');
+
+            // Verify line in file
+            if (dict.has(instruction[0])) {
+                // Line has a proper instruction
+            } else if (instruction[0].indexOf(':') > -1) {
+                // Line has a label
+            } else if (instruction[0].indexOf('.') === 0) {
+                console.log('Line is a heading: ' + instruction[0]);
+            } else if (instruction[0] === null || instruction[0].match(/^ *$/) !== null){
+                console.log('Line is empty!');
+            } else {
+                console.log(instruction[0] + ' is not in the dictionary');
+                alert('The following instruction is incorrect: ' + tempArr[i].replace(/;/g, ',').trim());
             }
-
         }
-        for (var i = 0; i < tempArr.length; i++) {
-
-            console.log("i-Val: "+  i + "|" + tempArr[i]);
-        }
-        afterFile();
-    }
-
+    };
 
     reader.readAsText(asmFile);
-
     console.log(customTxt.innerHTML);
-
-
 }
