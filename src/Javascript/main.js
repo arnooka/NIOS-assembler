@@ -30,7 +30,7 @@ function verifyFile() {
         //console.log(reader.result.split('\n'));
         fullFile += reader.result.replace(/,/g, ';').split('\n');
         const lines = fullFile.split(',');
-        let k = 1;
+        let lineNumber = 1;
         for (let i = 0; i < lines.length; i++) {
             const instruction = parseInstruction(lines[i]);
             //console.log("i-Val: "+  i + "|" + lines[i]);
@@ -39,14 +39,16 @@ function verifyFile() {
             if (dict.has(instruction[0])) {
                 // Line has a proper instruction
             } else if (instruction.length === 0 || instruction[0] === null || instruction[0].match(/^ *$/) !== null){
-                console.log('Line ' + k + ' is empty!');
+                console.log('Line ' + lineNumber + ' is empty!');
             } else if (instruction[0].indexOf(':') > -1) {
-                //Add label to label map
-                labels.set(instruction[0], k);
+                // Add label to label map
+                labels.set(instruction[0], lineNumber);
+                // Ensure next line is considered on the same line as the label
+                lineNumber--;
             } else if (instruction[0].indexOf('.') === 0) {
                 console.log('Line is a heading: ' + instruction[0]);
             }
-            k++;
+            lineNumber++;
         }
         console.log(labels);
     };
