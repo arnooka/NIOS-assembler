@@ -9,7 +9,7 @@ var r7 = 0;
 var r8 = 0;
 var r9 = 0;
 var r10 = 0;
-var r11 = 0
+var r11 = 0;
 var r12 = 0;
 var r13 = 0;
 var r14 = 0;
@@ -24,31 +24,56 @@ var r22 = 0;
 var r23 = 0;
 var r24 = 0;
 var r25 = 0;
-var r26 = 0;
-var r27 = 0;
-var r28 = 0;
-var r29 = 0;
-var r30 = 0;
-var r31 = 0;
+var r26 = 0; // Global pointer
+var r27 = 0; // Stack pointer
+var r28 = 0; // Frame pointer
+var r29 = 0; // Exception return address
+var r30 = 0; // Status register
+var r31 = 0; // return address
+
 
 
 
 var i,j;
 
+var regArr = [33];
 
 
 
-console.log(r1);
+function afterFile() {
+    console.log("---TEST REGHANDLER--- " + nameArr[0]);
+    console.log("---TEST REGHANDLER--- " + nameArr[0]);
+    console.log("---TEST REGHANDLER--- " + nameArr[0]);
+    console.log("---TEST REGHANDLER--- " + nameArr[0]);
+    console.log("---TEST REGHANDLER--- " + nameArr[0]);
+}
 
 function addRow() {
     var clist = $("#registerValues"); // This reference speeds up the run time
+    $("#registerValues").html("");
+
 // language=HTML
     var i;
-    for (i = 0; i  < 33; i++) {
+    clist.append(
+    `<tr style = " background-color : darkgray "><th>PC</th><th>0</th></tr>` +
+    "<tr><th>" + "Register" + "</th><th>" + "Value" + "</th></tr>"
+)
+    for (i = 0; i  < 32; i++) {
+        var r = "r";
+        r += i;
         clist.append(
-            `<tr><td >register</td>` + "<td>" + 0 + "</tr></td>"
+            `<tr><td >${r}</td>` + "<td>" + nameArr[i] + "</tr></td>"
         );
     }
+}
+
+function restartButton(){
+    var clist = $("#registerValues"); // This reference speeds up the run time
+    $("#registerValues").html("");
+    clist.append(
+        `<tr style = " background-color : darkgray "><th>PC</th><th>0</th></tr>` +
+        "<tr><th>" + "Register" + "</th><th>" + "Value" + "</th></tr>"
+    )
 }
 // for (i = 0; i < 33; i++) {
 //     for (j = 0; j < 33; j++) {
