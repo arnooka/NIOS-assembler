@@ -68,7 +68,9 @@ function memoryInit(){
 
 /* Writes data to memory at a certain address */
 function write(memAddress, data) {
+
     mem[memAddress] = data;
+    console.log("MEM[MEMORYADDRESS] = data: " + mem[memAddress]);
 }
 
 /* Reads array by address and return whats at that address */
@@ -88,7 +90,7 @@ function spaceFree() {
 }
 
 //For testing
-/*
+
 var i;
 
 var arr = ["andi", "r1", "r2", "100"]
@@ -106,4 +108,3 @@ var arr2 = read(10);
 console.log("\nInstruction: " + arr2[0] + "\nRegister: " + arr2[1] + "\nRegister: " + arr2[2] + "\nImmediate: " + arr2[3] + "\n");
 
 console.log(spaceFree());
-*/

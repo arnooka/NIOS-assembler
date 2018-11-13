@@ -1,6 +1,9 @@
 // IMPORTANT GLOBALS
 const pc = 1;
 const memoryOffset = 64;
+var instruction = [];
+let address = 0;
+
 // IMPORTANT GLOBALS
 
 function main() {
@@ -14,7 +17,7 @@ function initGUI() {
 
 function verifyFile() {
     // Verify correct file type
-    console.clear();
+    //console.clear();
     console.log("Verifying File '" + asmFile.name + "'");
     let extension = asmFile.name.toLowerCase().substr((asmFile.name.lastIndexOf('.') + 1));
     if (!/(asm|txt)$/ig.test(extension)) {
@@ -38,10 +41,16 @@ function verifyFile() {
             let instruction = parseInstruction(lines[i]);
             if (instruction.length > 0) console.log(instruction);
             let address = generateAddress(memoryAddress);
-
+            //console.log("INSTRUCTION: " + instruction[0]);
             // Verify instruction
             if (dict.has(instruction[0])) {
+
+
                 write(address, instruction);
+                console.log("ADDRESS: " + address);
+                //EXECUTE INSTRUCTION
+                //executeInstruction();
+                performInstruction(address);
             } else if (instruction.length === 0 || instruction[0] === null || instruction[0].match(/^ *$/) !== null) {
                 // Line is empty
                 memoryAddress--;
@@ -65,6 +74,7 @@ function verifyFile() {
                     for (let j = 1; j < instruction.length; j++) tempInstruction.push(instruction[j]);
                     //console.log(tempInstruction);
                     write(address, tempInstruction);
+
                 } else {
                     memoryAddress--;
                 }
@@ -111,5 +121,12 @@ function generateAddress(memoryAddress) {
     } else {
         address = '0x' + (memoryOffset + memoryAddress - 1).toString(16);
     }
+    console.log("MEMADDRESS: " + address);
+
     return address;
+}
+
+function performInstruction(address){
+
+    executeInstruction(address);
 }

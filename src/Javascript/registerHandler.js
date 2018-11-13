@@ -49,6 +49,19 @@ function afterFile() {
 }
 
 function addRow() {
+
+   // console.log("address: " + address);
+    instruction = read("0x41");
+    console.log("REGH_INSTRUCTION: " + instruction);
+    // for (var i = 0; i < MEMORY_SIZE; i++){
+    //     if (mem[i] != undefined){
+    //         console.log("mem[" + i + "]: " + mem[i]);
+    //         console.log("INSTRUCTION" + instruction[i]);
+    //     }
+    // }
+    if (instruction == "add") {
+        executeInstruction();
+    }
     var clist = $("#registerValues"); // This reference speeds up the run time
     $("#registerValues").html("");
 
@@ -62,7 +75,7 @@ function addRow() {
         var r = "r";
         r += i;
         clist.append(
-            `<tr><td >${r}</td>` + "<td>" + nameArr[i] + "</tr></td>"
+            `<tr><td >${r}</td>` + "<td>" + mem["0x40"] + "</tr></td>"
         );
     }
 }

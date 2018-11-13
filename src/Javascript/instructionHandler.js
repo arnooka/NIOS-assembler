@@ -279,29 +279,50 @@ function executeOther(Oinstruction, operands) {
     }
 }
 
-function executeInstruction() {
+function executeInstruction(address) {
+
     // most r types: mem[PC][1] mem[x] = {0x111, [add, r1,r2,r3]}, access 'add' by  mem[PC][1][0]
     // Get Instruction from mem by going to PC
-    var currentInstruction = mem[pc][1][0];
+    console.log("ADDRESS: " + address);
+    instruction = read(address);
+
+    console.log("INSTRH_INSTRUCTION: " + instruction);
+   // var currentInstruction = instruction[pc][1][0];
+    var currentInstruction = instruction[0];
+    var a = toHex(instruction[1]);
+    var b = toHex(instruction[2]);
+    if (instruction[3]) {
+        var c = toHex(instruction[3]);
+        console.log("c: " + c);
+    }
+    console.log("a: " + a);
+    console.log("b: " + b);
+
+
+
+    //var currentInstruction = instruction[0];
+
+    console.log("CURRENT INSTRUCTION: " + currentInstruction);
     if (!currentInstruction) {
         console.log('Failure to retrieve instruction from memory in InstructionHandler');
     }
 
     // Basic R type vars
-    var rA = toHex(mem[pc][1][1]);
-    var rB = toHex(mem[pc][1][2]);
-    var rC = toHex(mem[pc][1][3]);
+    // var rA = toHex(mem[pc][1][1]);
+    // var rB = toHex(mem[pc][1][2]);
+    // var rC = toHex(mem[pc][1][3]);
     // J type
-    var jImmediate = mem[pc][1][1];
+   // var jImmediate = mem[pc][1][1];
     //I Type
-    var iImmediate = mem[pc][1][3];
+//    var iImmediate = mem[pc][1][3];
 
     //R types ---------------------------------------------------------------------------
     if (currentInstruction === 'add') {        // add rB and rC, and store in rA
-        mem[rA][0] = mem[rB][0] + mem[rC][0];
+        a = b + c;
+       // mem[rA][0] = mem[rB][0] + mem[rC][0];
         return 1;
     } else if (currentInstruction === 'and') {
-        mem[rA][0] = mem[rB][0]&mem[rC][0];
+        mem[rA][0] = mem[rB][0]&mem[rC][0];a
         return 1;
     } else if (currentInstruction === 'break') {
         // stop execution?
@@ -497,6 +518,7 @@ function executeInstruction() {
     } else if (currentInstruction === 'movhi') {
 
     } else if (currentInstruction === 'movi') {
+        a = b;
 
     } else if (currentInstruction === 'movia') {
 
@@ -533,12 +555,17 @@ function executeInstruction() {
     } else {
         console.error('Instruction was not able to be identified by the instruction handler');
     }
-
+    write(address,);
 }
 
 function toHex(register) {
-    register = register.replace('r','');
+    if (register.includes('r') && register !== undefined){
+
+
+        register = register.replace('r','');
+        }
     var parsed = parseInt(register);
+
     if (isNaN(parsed)) {
         console.error('Register conversion in toHex function failed, register is not a numer. Current PC is: ' + pc);
         return register;
