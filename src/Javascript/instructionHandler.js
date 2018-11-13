@@ -291,8 +291,10 @@ function executeInstruction() {
     var rA = toHex(mem[pc][1][1]);
     var rB = toHex(mem[pc][1][2]);
     var rC = toHex(mem[pc][1][3]);
-    // var registerAddress = toHex(rA);
-    var immediate = mem[pc][1][1];
+    // J type
+    var jImmediate = mem[pc][1][1];
+    //I Type
+    var iImmediate = mem[pc][1][3];
 
     //R types ---------------------------------------------------------------------------
     if (currentInstruction === 'add') {        // add rB and rC, and store in rA
@@ -525,7 +527,7 @@ function executeInstruction() {
         mem[0x1F][0] = pc+1;
         // TODO: get label from map
     } else if (currentInstruction === 'jmpi') {
-            return immediate;
+            return jImmediate;
     } else if (currentInstruction === 'nop') {
         return 1;
     } else {
@@ -537,6 +539,10 @@ function executeInstruction() {
 function toHex(register) {
     register = register.replace('r','');
     var parsed = parseInt(register);
+    if (isNaN(parsed)) {
+        console.error('Register conversion in toHex function failed, register is not a numer. Current PC is: ' + pc);
+        return register;
+    }
     if (parsed === 10) {parsed = 'A'}
     else if (parsed === 11) {parsed = 'B'}
     else if (parsed === 12) {parsed = 'C'}
