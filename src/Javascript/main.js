@@ -4,6 +4,9 @@ const MEM_OFFSET = 64;
 // IMPORTANT GLOBALS
 
 function main() {
+    let address = generateAddress(pc);
+    let instruction = mem[address];
+
 }
 
 function instructionHandler() {
@@ -83,7 +86,7 @@ function verifyFile() {
                 }
                 memoryAddress--;
             } else if (instruction[0].indexOf('#') === 0) {
-                memoryAddress--;
+                    memoryAddress--;
             } else {
                 alert('(Line ' + fileLine + '): \'' + instruction[0] + '\' is not a proper instruction');
                 break;
