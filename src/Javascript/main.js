@@ -1,12 +1,25 @@
 // IMPORTANT GLOBALS
-const pc = 1;
+let pc = 1;
 const MEM_OFFSET = 64;
 // IMPORTANT GLOBALS
 
 function main() {
     let address = generateAddress(pc);
-    let instruction = mem[address];
+    let tempVal = executeInstruction(address);
+    if (isNaN(tempVal)) {
+        alert('Error at ' + address + ': ' + tempVal);
+        // TODO: Set boolean logic to stop program
+    } else if (tempVal === 'break') {
+        // TODO: end execution
+    } else {
+        if (tempVal === 1){
+            pc++;
+        } else {
+            pc = tempVal
+        }
+    }
 
+    // TODO: Make function loop
 }
 
 function instructionHandler() {
