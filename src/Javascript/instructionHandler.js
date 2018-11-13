@@ -12,8 +12,6 @@ var allInstructions = [
     'ldw', 'movhi', 'movi', 'movia', 'movui', 'muli', 'orhi', 'ori', 'stb', 'sth', 'stw', 'subi', 'xorhi', 'xori', 'call', 'jmpi', 'nop'
 ];
 
-
-
 /* R TYPE INSTRUCTIONS
 6-bit opcode field
 Three 5-bit register fields A, B, and C
@@ -272,9 +270,7 @@ function executeOther(Oinstruction, operands) {
     if (!Oinstruction) {
         console.log('No instruction passed to execute other');
         return;
-    }
-
-    if (Oinstruction === 'nop') {
+    } if (Oinstruction === 'nop') {
         // do nothing?
     }
 }
@@ -287,50 +283,47 @@ function executeInstruction(address) {
     instruction = read(address);
 
     console.log("INSTRH_INSTRUCTION: " + instruction);
-   // var currentInstruction = instruction[pc][1][0];
-    var currentInstruction = instruction[0];
-    var a = toHex(instruction[1]);
-    var b = toHex(instruction[2]);
-    if (instruction[3]) {
-        var c = toHex(instruction[3]);
-        console.log("c: " + c);
+    if (instruction[1] == 'r0') {
+        return 'Cannot write to r0';
     }
+    var currentInstruction = instruction[0];
+    var c = (instruction[1]);
+    var a = null;
+    var b = null;
+    if(instruction[2]) {
+        a = (instruction[2]);
+        console.log("a: " + a);
+    }
+    if (instruction[3]) {
+        b = toHex(instruction[3]);
+        console.log("b: " + b);
+    }
+
     console.log("a: " + a);
-    console.log("b: " + b);
 
 
-
-    //var currentInstruction = instruction[0];
 
     console.log("CURRENT INSTRUCTION: " + currentInstruction);
     if (!currentInstruction) {
         console.log('Failure to retrieve instruction from memory in InstructionHandler');
     }
 
-    // Basic R type vars
-    // var rA = toHex(mem[pc][1][1]);
-    // var rB = toHex(mem[pc][1][2]);
-    // var rC = toHex(mem[pc][1][3]);
-    // J type
-   // var jImmediate = mem[pc][1][1];
-    //I Type
-//    var iImmediate = mem[pc][1][3];
-
     //R types ---------------------------------------------------------------------------
-    if (currentInstruction === 'add') {        // add rB and rC, and store in rA
-        a = b + c;
-       // mem[rA][0] = mem[rB][0] + mem[rC][0];
+    if (currentInstruction === 'add') {
+        mem[toHex(c)] = mem[toHex(a)] + mem[toHex(b)];
+        // write(toHex(c), read(toHex(a)) + read(toHex(b)));
         return 1;
     } else if (currentInstruction === 'and') {
-        mem[rA][0] = mem[rB][0]&mem[rC][0];a
+        mem[toHex(c)] = mem[toHex(a)] & mem[toHex(b)];
         return 1;
     } else if (currentInstruction === 'break') {
-        // stop execution?
+        return 'break';
     } else if (currentInstruction === 'bret') {
         //breakpoint return, so resume execution?
+        return 1;
     } else if (currentInstruction === 'callr') {
-        mem[0x1f][0] = pc + 1;
-        return rA;
+        mem['0x1f'] = pc + 1;
+        return setPC(read(toHex(c)));
     } else if (currentInstruction === 'cmpeq') {
         if (mem[rB][0] == mem[rC][0]) {
             mem[rA][0] = 1;
@@ -555,27 +548,25 @@ function executeInstruction(address) {
     } else {
         console.error('Instruction was not able to be identified by the instruction handler');
     }
-    write(address,);
+
+    // write(address,);
 }
 
 function toHex(register) {
-    if (register.includes('r') && register !== undefined){
 
-
-        register = register.replace('r','');
-        }
+    register = register.replace('r','');
     var parsed = parseInt(register);
 
     if (isNaN(parsed)) {
-        console.error('Register conversion in toHex function failed, register is not a numer. Current PC is: ' + pc);
+        console.error('Register conversion in toHex function failed, register is not a number. Current PC is: ' + pc);
         return register;
     }
-    if (parsed === 10) {parsed = 'A'}
-    else if (parsed === 11) {parsed = 'B'}
-    else if (parsed === 12) {parsed = 'C'}
-    else if (parsed === 13) {parsed = 'D'}
-    else if (parsed === 14) {parsed = 'E'}
-    else if (parsed === 15) {parsed = 'F'}
+    if (parsed === 10) {parsed = 'a'}
+    else if (parsed === 11) {parsed = 'b'}
+    else if (parsed === 12) {parsed = 'c'}
+    else if (parsed === 13) {parsed = 'd'}
+    else if (parsed === 14) {parsed = 'e'}
+    else if (parsed === 15) {parsed = 'f'}
     else if (parsed === 16) {parsed = '10'}
     else if (parsed === 17) {parsed = '11'}
     else if (parsed === 18) {parsed = '12'}
@@ -586,12 +577,12 @@ function toHex(register) {
     else if (parsed === 23) {parsed = '17'}
     else if (parsed === 24) {parsed = '18'}
     else if (parsed === 25) {parsed = '19'}
-    else if (parsed === 26) {parsed = '1A'}
-    else if (parsed === 27) {parsed = '1B'}
-    else if (parsed === 28) {parsed = '1C'}
-    else if (parsed === 29) {parsed = '1D'}
-    else if (parsed === 30) {parsed = '1E'}
-    else if (parsed === 31) {parsed = '1F'}
+    else if (parsed === 26) {parsed = '1a'}
+    else if (parsed === 27) {parsed = '1b'}
+    else if (parsed === 28) {parsed = '1c'}
+    else if (parsed === 29) {parsed = '1d'}
+    else if (parsed === 30) {parsed = '1e'}
+    else if (parsed === 31) {parsed = '1f'}
 
 
     parsed = '0x' + parsed;
