@@ -106,8 +106,8 @@ function updateMemoryTable(){
 
 
         clist.append(
-            `<tr id = "tableRow + ${i}"><td >${memAddress}</td>` + "<td>" + memoryCheck(memAddress) +  "</td>" + `<td> <button  id = "memoryButton"  type="button"
-                 class="btn btn-default btn-md" onclick= "memoryButton(0)"> Select Memory Location</button> </td></tr>`
+            `<tr id = "tableRow + ${i}"><td >${memAddress}</td>` + "<td>" + memoryCheck(memAddress) +  "</td>" + `<td> <button  id = "${i}"  type="button"
+                 class="btn btn-default btn-md" onclick= "memoryButton(id)"> Select Memory Location</button> </td></tr>`
         );
 
         memAddress = memAddress.slice(2, 4);
@@ -131,7 +131,7 @@ function memoryCheck(memAddress){
     }
 }
 
-function memoryButton(i){
+function memoryButton(id){
     var txt;
     var person = prompt("Enter memory address:", "0x46");
 
@@ -140,8 +140,9 @@ function memoryButton(i){
     // } else {
     //     txt = "Hello " + person + "! How are you today?";
     // }
-    document.getElementById(`tableRow + ${i}`).cells[0].innerHTML = person;
-    document.getElementById(`tableRow + ${i}`).cells[1].innerHTML = memoryCheck(person);
+
+    document.getElementById(`tableRow + ${id}`).cells[0].innerHTML = person;
+    document.getElementById(`tableRow + ${id}`).cells[1].innerHTML = memoryCheck(person);
 }
 
 function restartButton(){
