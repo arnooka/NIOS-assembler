@@ -320,7 +320,7 @@ function executeInstruction(address) {
         //breakpoint return, so resume execution?
         return 1;
     } else if (currentInstruction === 'callr') {
-        mem['0x1f'] = pc + 1;
+        mem['0x1f'] = address + 1;
         return read(parseOutReg(a));
     } else if (currentInstruction === 'cmpeq') {
         if (read(parseOutReg(b)) === read(parseOutReg(c))) {
@@ -401,7 +401,7 @@ function executeInstruction(address) {
         return 1;
     } else if (currentInstruction === 'nextpc') {
         // puts the address of the next instruction in the register;
-         write(parseOutReg(a), pc+1);
+         write(parseOutReg(a), address+1);
     } else if (currentInstruction === 'nor') {
         let result = read(parseOutReg(b)) | read(parseOutReg(c));
         result = ~result;
@@ -596,31 +596,44 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'movui') {
 
     } else if (currentInstruction === 'muli') {
-
+        let value = read(parseOutReg(b)) * parseInt(c);
+        write(parseOutReg(a), value);
+        return 1;
     } else if (currentInstruction === 'orhi') {
 
     } else if (currentInstruction === 'ori') {
-
+        let value = read(parseOutReg(b)) | parseInt(c);
+        write(parseOutReg(a), value);
+        return 1;
     } else if (currentInstruction === 'stb') {
 
     } else if (currentInstruction === 'sth') {
 
     } else if (currentInstruction === 'stw') {
-
+        if (isNaN(b)) {
+            c = b;
+            b = 0;
+        }
+        write(parseOutReg(c) + parseInt(b), a);
+        return 1;
     } else if (currentInstruction === 'subi') {
-
+        let value = read(parseOutReg(b)) - parseInt(c);
+        write(parseOutReg(a), value);
+        return 1;
     } else if (currentInstruction === 'xorhi') {
 
     } else if (currentInstruction === 'xori') {
-
+        let value = read(parseOutReg(b)) ^ parseInt(c);
+        write(parseOutReg(a), value);
+        return 1;
     }
     // J Types --------------------------------------------------------------------------------------------
     else if (currentInstruction === 'call') {
         // Use map to return address of label in instruction, set r31 to pc + 1;
-        mem[0x1F][0] = pc+1;
-        // TODO: get label from map
+        write(31, address+1);
+        return labels.get(a);
     } else if (currentInstruction === 'jmpi') {
-            return jImmediate;
+            return labels.get(a);
     } else if (currentInstruction === 'nop') {
         return 1;
     } else {
