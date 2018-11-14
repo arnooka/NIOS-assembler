@@ -1,15 +1,14 @@
 // IMPORTANT GLOBALS
-let pc = 1;
-const MEM_OFFSET = 64;
+let pc = 0x40;
+const MEM_OFFSET = 0x40;
 // IMPORTANT GLOBALS
 
 function main() {
-    let address = generateAddress(pc);
-    let tempVal = executeInstruction(address);
+    let tempVal = executeInstruction(pc);
     if (isNaN(tempVal)) {
         if (tempVal === 'break') return;
         else {
-            alert('Error at ' + address + ': ' + tempVal);
+            alert('Error at 0x' + pc.toString(16) + ': ' + tempVal);
             return;
         }
     } else {
@@ -45,14 +44,12 @@ function verifyFile() {
         fullFile += reader.result.replace(/,/g, ';').split('\n');
         const lines = fullFile.split(',');
 
-        let memoryAddress = 1;
-        let fileLine = 1;
+        let memoryAddress = MEM_OFFSET, fileLine = 1;
         let dataArea = false;
         for (let i = 0; i < lines.length; i++) {
             // Parse instruction and generate memory address for instruction
             let instruction = parseInstruction(lines[i]);
             if (instruction.length > 0) console.log(instruction);
-            let address = generateAddress(memoryAddress);
 
             // Check if space is available in memory
             if (memoryAddress > (MEMORY_SIZE - MEM_OFFSET)) {
@@ -62,7 +59,7 @@ function verifyFile() {
 
             // Verify and add instruction to memory
             if (dict.has(instruction[0])) {
-                write(address, instruction);
+                write(memoryAddress, instruction);
             } else if (instruction.length === 0 || instruction[0] === null || instruction[0].match(/^ *$/) !== null) {
                 memoryAddress--;
             } else if (instruction[0].indexOf(':') > -1) {
@@ -78,14 +75,14 @@ function verifyFile() {
                 }
 
                 // Add label to label map
-                labels.set(instruction[0].replace(':', ''), address);
+                labels.set(instruction[0].replace(':', ''), memoryAddress);
 
                 // Get instruction if it is on the same line as the label and add it to memory
                 if(instruction.length > 1) {
                     let tempInstruction = [];
                     for (let j = 1; j < instruction.length; j++) tempInstruction.push(instruction[j]);
                     //console.log(tempInstruction);
-                    write(address, tempInstruction);
+                    write(memoryAddress, tempInstruction);
                 } else {
                     memoryAddress--;
                 }
@@ -93,7 +90,7 @@ function verifyFile() {
                 if (instruction[0] === '.end'){
                     break;
                 }
-                write(address, instruction);
+                write(memoryAddress, instruction);
             }else if (instruction[0].indexOf('.') === 0 && !dataArea) {
                 //console.log('Line is a heading: ' + instruction[0]);
                 if(instruction[0] === '.data'){
@@ -110,8 +107,8 @@ function verifyFile() {
             memoryAddress++;
             fileLine++;
         }
-        //console.log(labels);
-        //console.log(mem);
+        console.log(labels);
+        console.log(mem);
     };
 }
 
@@ -144,18 +141,4 @@ function parseInstruction(line) {
         }
     }
     return instruction;
-}
-
-function generateAddress(memoryAddress) {
-    let address = null;
-    if (memoryAddress === 1){
-        address = '0x' + (MEM_OFFSET).toString(16);
-    } else {
-        address = '0x' + (MEM_OFFSET + memoryAddress - 1).toString(16);
-    }
-    return address;
-}
-
-function setPC(hexAddress) {
-    return parseInt(hexAddress) - MEM_OFFSET;
 }

@@ -45,35 +45,32 @@
      |             End of Memory                   |       0xFFFF
      |_____________________________________________|                */
 
-
 /* Memory is represented in a 65,536 byte array. */
 const MEMORY_SIZE = 65536;
-var mem = [];
+let mem = [];
 
 /* set up function of the memory */
-function memoryInit(){
+function memoryInit() {
     /*Initializing all registers in memory to zero
     * Ex. mem[1] = r1 mem[2] = r2 ... mem[25] = r25 */
-    for (let i = 0; i < 26; i++){
-        let address = '0x' + (i).toString(16);
-        mem[address] = 0;
-        // console.log("i val: " + i);
-        // console.log("mem[" + i + "]: " + mem[i]);
-    }
+    mem = [];
+    for (let i = 0; i < 26; i++) mem[i] = 0;
+
     // Declare Special Registers
     // TODO: find what these should be initialized as
-    //mem['0x1a'] = 0;    // r26: Global Pointer
-    //mem['0x1b'] = 0;    // r27: Stack Pointer
-    //mem['0x1c'] = 0;    // r28: Frame Pointer
-    //mem['0x1d'] = 0;    // r29: Exception Return Address
-    //mem['0x1e'] = 0;    // r30: Status Register
-    //mem['0x1f'] = 0;    // r31: Return Address
+    mem[26] = 0;    // Global Pointer
+    mem[27] = 0;    // Stack Pointer
+    mem[28] = 0;    // Frame Pointer
+    mem[29] = 0;    // Exception Return Address
+    mem[30] = 0;    // Status Register
+    mem[31] = 0;    // Return Address
+
+    pc = 0x40;
 }
 
 /* Writes data to memory at a certain address */
 function write(memAddress, data) {
     mem[memAddress] = data;
-   //console.log("MEM[MEMORYADDRESS] = data: " + mem[memAddress]);
 }
 
 /* Reads array by address and return whats at that address */
@@ -85,8 +82,7 @@ function read(memAddress) {
 function spaceFree() {
     let count = 0;
     for (let i = 0; i < MEMORY_SIZE; i++) {
-        let address = '0x' + (i).toString(16);
-        if (mem[address] !== undefined) count++;
+        if (mem[i] !== undefined) count++;
     }
     return MEMORY_SIZE - count;
 }
