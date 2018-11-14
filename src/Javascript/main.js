@@ -7,19 +7,16 @@ function main() {
     let address = generateAddress(pc);
     let tempVal = executeInstruction(address);
     if (isNaN(tempVal)) {
-        alert('Error at ' + address + ': ' + tempVal);
-        // TODO: Set boolean logic to stop program
-    } else if (tempVal === 'break') {
-        // TODO: end execution
-    } else {
-        if (tempVal === 1){
-            pc++;
-        } else {
-            pc = tempVal
+        if (tempVal === 'break') return;
+        else {
+            alert('Error at ' + address + ': ' + tempVal);
+            return;
         }
+    } else {
+        if (tempVal === 1) pc++;
+        else pc = tempVal;
     }
-
-    // TODO: Make function loop
+    main();
 }
 
 function instructionHandler() {
@@ -114,6 +111,8 @@ function verifyFile() {
 
 function parseInstruction(line) {
     line = line.replace(/;/g, ',').trim();
+    line = line.replace('/*', ' /* ');
+    line = line.replace('*/', ' */ ');
     line = line.replace(/\t/g, ',');
     line = line.replace(/ /g, ',');
     line = line.replace(/\(/g, ',');
@@ -121,12 +120,22 @@ function parseInstruction(line) {
     const tempArr = line.split(',');
     const instruction = [];
     for (let j = 0; j < tempArr.length; j++) {
-        if (tempArr[j].indexOf('#') === 0 || tempArr.indexOf('//') === 0) {
-            break;
-        } else if (tempArr[j] === null || tempArr[j].match(/^ *$/) !== null) {
-            continue;
+        if (tempArr[j] === '*/') {
+            blockComment = false;
         }
-        instruction.push(tempArr[j]);
+        if (!blockComment) {
+            if (tempArr[j].indexOf('#') === 0 || tempArr[j].indexOf('//') === 0 || tempArr[j] === '/*') {
+                if (tempArr[j] === '/*') {
+                    blockComment = true;
+                }
+                break;
+            } else if (tempArr[j] === null || tempArr[j].match(/^ *$/) !== null) {
+                continue;
+            }
+            if (tempArr[j] !== '*/') {
+                instruction.push(tempArr[j]);
+            }
+        }
     }
     return instruction;
 }
