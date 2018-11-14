@@ -548,7 +548,12 @@ function executeInstruction(address) {
         }
         return 1;
     } else if (currentInstruction === 'cmpgti') {
-        
+        if (read(parseOutReg(b)) > parseInt(c)) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmpgtu') {
 
     } else if (currentInstruction === 'cmpgtui') {
