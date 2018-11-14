@@ -55,6 +55,14 @@ function memoryInit(){
     // Set R0 as zero
     mem[0] = 0;
 
+    /*Initializing all registers in memory to zero
+    * Ex. mem[1] = r1 mem[2] = r2 ... mem[25] = r25 */
+    for (var i = 1; i < 26; i++){
+      mem[i] = 0;
+       // console.log("i val: " + i);
+       // console.log("mem[" + i + "]: " + mem[i]);
+    }
+
     // Declare Special Registers
     // TODO: find what these should be initialized as
     mem[26] = 0;            // Global Pointer
@@ -70,7 +78,7 @@ function memoryInit(){
 function write(memAddress, data) {
 
     mem[memAddress] = data;
-    console.log("MEM[MEMORYADDRESS] = data: " + mem[memAddress]);
+   // console.log("MEM[MEMORYADDRESS] = data: " + mem[memAddress]);
 }
 
 /* Reads array by address and return whats at that address */
@@ -91,6 +99,9 @@ function spaceFree() {
 
 //For testing
 
+memoryInit();
+
+/*
 var i;
 
 var arr = ["andi", "r1", "r2", "100"]
@@ -108,3 +119,4 @@ var arr2 = read(10);
 console.log("\nInstruction: " + arr2[0] + "\nRegister: " + arr2[1] + "\nRegister: " + arr2[2] + "\nImmediate: " + arr2[3] + "\n");
 
 console.log(spaceFree());
+*/

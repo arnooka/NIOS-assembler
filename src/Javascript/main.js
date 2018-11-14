@@ -3,10 +3,12 @@ const pc = 1;
 const memoryOffset = 64;
 var instruction = [];
 let address = 0;
+var skip = 0;
 
 // IMPORTANT GLOBALS
 
 function main() {
+
 }
 
 function instructionHandler() {
@@ -43,14 +45,22 @@ function verifyFile() {
             let address = generateAddress(memoryAddress);
             //console.log("INSTRUCTION: " + instruction[0]);
             // Verify instruction
+            if (instruction[0] == "dowhile:"){
+                console.log("SKIPPING NEXT INSTRUCTION UNTIL DOWHILE IS CALLED");
+                skip = 1;
+            }
             if (dict.has(instruction[0])) {
 
 
                 write(address, instruction);
-                console.log("ADDRESS: " + address);
+                //console.log("ADDRESS: " + address);
                 //EXECUTE INSTRUCTION
-                //executeInstruction();
-                performInstruction(address);
+                if (skip != 1) {
+                    performInstruction(address);
+                }else{
+                    console.log("INSTRUCTION " + instruction + " SKIPPED");
+                }
+                skip = 0;
             } else if (instruction.length === 0 || instruction[0] === null || instruction[0].match(/^ *$/) !== null) {
                 // Line is empty
                 memoryAddress--;
@@ -72,8 +82,10 @@ function verifyFile() {
                 if(instruction.length > 1) {
                     let tempInstruction = [];
                     for (let j = 1; j < instruction.length; j++) tempInstruction.push(instruction[j]);
-                    //console.log(tempInstruction);
+                    console.log(tempInstruction);
                     write(address, tempInstruction);
+
+
 
                 } else {
                     memoryAddress--;
@@ -87,10 +99,14 @@ function verifyFile() {
                 alert('(Line ' + fileLine + '): \'' + instruction[0] + '\' is not a proper instruction');
                 break;
             }
+
             memoryAddress++;
             fileLine++;
         }
         console.log(labels);
+        console.log("dowhile address location: " + labels.get('dowhile:'));
+        console.log("forloop address location: " + labels.get('forloop:'));
+
     };
 }
 
@@ -121,7 +137,7 @@ function generateAddress(memoryAddress) {
     } else {
         address = '0x' + (memoryOffset + memoryAddress - 1).toString(16);
     }
-    console.log("MEMADDRESS: " + address);
+    //console.log("MEMADDRESS: " + address);
 
     return address;
 }

@@ -280,24 +280,82 @@ function executeOther(Oinstruction, operands) {
 }
 
 function executeInstruction(address) {
-
+    var r = "";
+    var i;
+    // var startLoop = "";
+    // var startAddress = 0;
+    // if (labels.get('forloop:')){
+    //     if(startAddress == 0) {
+    //         startLoop = address;
+    //         console.log("startLoop: " + startLoop);
+    //         startAddress = 1;
+    //     }
+    // }
     // most r types: mem[PC][1] mem[x] = {0x111, [add, r1,r2,r3]}, access 'add' by  mem[PC][1][0]
     // Get Instruction from mem by going to PC
+    console.log("---------------------------------------");
     console.log("ADDRESS: " + address);
     instruction = read(address);
 
-    console.log("INSTRH_INSTRUCTION: " + instruction);
+    //console.log("INSTRH_INSTRUCTION: " + instruction);
    // var currentInstruction = instruction[pc][1][0];
     var currentInstruction = instruction[0];
-    var a = toHex(instruction[1]);
-    var b = toHex(instruction[2]);
+    var specialCase = 0;
+    var c;
+
+// possible temp for reg a
+    var rA = instruction[1];
+
+    console.log("rA: " + rA);
+    var a = instruction[1];
+    var b = instruction[2];
     if (instruction[3]) {
-        var c = toHex(instruction[3]);
+        c = instruction[3];
         console.log("c: " + c);
     }
     console.log("a: " + a);
     console.log("b: " + b);
 
+    for (i = 1; i < 32; i++){
+        r = "r";
+        r += i;
+       // console.log("R val: " + r);
+        if (a == r){
+            console.log("a = " + a + " | Reg. val = " + r);
+            a = mem[i];
+
+            console.log("After setting val, a = " + a );
+        }
+        if (b == r){
+            console.log("b = " + b + " | Reg. val = " + r);
+            b = mem[i];
+
+            console.log("After setting val, b = " + b );
+        }
+        if (instruction[3]) {
+            if (c == r) {
+                console.log("c = " + c + " | Reg. val = " + r);
+                c = mem[i];
+                c = parseInt(c,10);
+                rC = instruction[3];
+                console.log("After setting val, c = " + c );
+            }
+            // if (instruction[3] == "forloop"){
+            //
+            //     c = "forloop";
+            // }
+            // if (instruction[3] == "dowhile"){
+            //
+            //     c = "dowhile";
+            // }
+            //console.log("c-val: " + c);
+        }
+    }
+    a = parseInt(a,10);
+    b = parseInt(b,10);
+    if (instruction[3] != "forloop" && instruction[3] != "dowhile") {
+        c = parseInt(c, 10);
+    }
 
 
     //var currentInstruction = instruction[0];
@@ -318,59 +376,62 @@ function executeInstruction(address) {
 
     //R types ---------------------------------------------------------------------------
     if (currentInstruction === 'add') {        // add rB and rC, and store in rA
+
         a = b + c;
+        console.log("add executed. " + rA + " is now = " + a);
        // mem[rA][0] = mem[rB][0] + mem[rC][0];
-        return 1;
+
     } else if (currentInstruction === 'and') {
-        mem[rA][0] = mem[rB][0]&mem[rC][0];a
+        // mem[rA][0] = mem[rB][0]&mem[rC][0];
         return 1;
     } else if (currentInstruction === 'break') {
         // stop execution?
     } else if (currentInstruction === 'bret') {
         //breakpoint return, so resume execution?
     } else if (currentInstruction === 'callr') {
-        mem[0x1f][0] = pc + 1;
+        // mem[0x1f][0] = pc + 1;
         return rA;
     } else if (currentInstruction === 'cmpeq') {
-        if (mem[rB][0] == mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] == mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
     } else if (currentInstruction === 'cmpgei') {
 
     } else if (currentInstruction === 'cmpgeu') {
 
     } else if (currentInstruction === 'cmplt') {
-        if (mem[rB][0] < mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] < mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
     } else if (currentInstruction === 'cmpltu') {
 
     } else if (currentInstruction === 'cmpne') {
-        if (mem[rB][0] != mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] != mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
     } else if (currentInstruction === 'custom') {
 
     } else if (currentInstruction === 'div') {
-        if(mem[rC][0] === 0) { //can't divide by 0
-            // TODO: need to return some sort of error status
-        }
-        mem[rA][0] = mem[rB][0] / mem[rC][0];
+        // if(mem[rC][0] === 0) { //can't divide by 0
+        //     // TODO: need to return some sort of error status
+        // }
+        // mem[rA][0] = mem[rB][0] / mem[rC][0];
         return 1;
     } else if (currentInstruction === 'divu') {
 
     } else if (currentInstruction === 'jmp') {
-        return mem[rA][0];
+        //
+        // return mem[rA][0];
     } else if (currentInstruction === 'mov') {
-        mem[rA][0] = mem[rB][0];
+        // mem[rA][0] = mem[rB][0];
     } else if (currentInstruction === 'mul') {
-        mem[rA][0] = mem[rB][0] * mem[rC][0];
+        // mem[rA][0] = mem[rB][0] * mem[rC][0];
     } else if (currentInstruction === 'mulxss') {
 
     } else if (currentInstruction === 'mulxsu') {
@@ -379,17 +440,18 @@ function executeInstruction(address) {
 
     } else if (currentInstruction === 'nextpc') {
         // puts the address of the next instruction in rA;
-        mem[rA][0] = toHex(pc+1);
+        // mem[rA][0] = toHex(pc+1);
     } else if (currentInstruction === 'nor') {
-        mem[rA][0] = mem[rB][0] | mem[rC][0];
-        mem[rA][0] = ~mem[rA][0];
+        // mem[rA][0] = mem[rB][0] | mem[rC][0];
+        // mem[rA][0] = ~mem[rA][0];
         return 1;
     } else if (currentInstruction === 'or') {
-        mem[rA][0] = mem[rB][0] | mem[rC][0];
+        // mem[rA][0] = mem[rB][0] | mem[rC][0];
         return 1;
     } else if (currentInstruction === 'ret') {
         // return to address at r31
-        return mem[0x1F][0];
+        return 1;
+        // return mem[0x1F][0];
     } else if (currentInstruction === 'rol') {
 
     } else if (currentInstruction === 'roli') {
@@ -397,85 +459,237 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'ror') {
 
     } else if (currentInstruction === 'sll') {
-        mem[rA][0] = mem[rB][0] << mem[rC][0];
+        // mem[rA][0] = mem[rB][0] << mem[rC][0];
         return 1;
     } else if (currentInstruction === 'slli') {
 
     } else if (currentInstruction === 'sra') {
-        mem[rA][0] = mem[rB][0] >> mem[rC][0];
+        // mem[rA][0] = mem[rB][0] >> mem[rC][0];
     } else if (currentInstruction === 'srai') {
 
     } else if (currentInstruction === 'srl') {
-        mem[rA][0] = mem[rB][0] >> mem[rC][0];
+        // mem[rA][0] = mem[rB][0] >> mem[rC][0];
         return 1;
     } else if (currentInstruction === 'srli') {
 
     } else if (currentInstruction === 'sub') {
-        mem[rA][0] = mem[rB][0] - mem[rC][0];
+        // mem[rA][0] = mem[rB][0] - mem[rC][0];
         return 1;
     } else if (currentInstruction === 'sync') {
 
     } else if (currentInstruction === 'xor') {
-        mem[rA][0] = mem[rB][0] ^ mem[rC][0];
+        // mem[rA][0] = mem[rB][0] ^ mem[rC][0];
         return 1;
     }
     // I TYPES ------------------------------------------------------------------------------------------------------------
     else if (currentInstruction === 'addi') {
 
+        a = b + c;
+        console.log("addi executed. " + rA + " is now = " + a);
     } else if (currentInstruction === 'andhi') {
 
     } else if (currentInstruction === 'andi') {
 
     } else if (currentInstruction === 'beq') {
-        if (mem[rA][0] == mem[rB][0]) {
-            // TODO Return address of Label from map
-        } else {
+        // if (mem[rA][0] == mem[rB][0]) {
+        //     // TODO Return address of Label from map
+        // } else {
             return 1;
-        }
+       // }
     } else if (currentInstruction === 'bge') {
 
     } else if (currentInstruction === 'bgeu') {
 
     } else if (currentInstruction === 'bgt') {
-        if(mem[rA][0] >= mem[rB][0]) {
-            //TODO: set pc to label from map
-        } else {
+        // if(mem[rA][0] >= mem[rB][0]) {
+        //     //TODO: set pc to label from map
+        // } else {
             return 1;
-        }
+       // }
     } else if (currentInstruction === 'bgtu') {
 
     } else if (currentInstruction === 'ble') {
-        if(mem[rA][0] <= mem[rB][0]) {
-            //TODO: set pc to label from map
-        } else {
-            return 1;
+        var startLoop;
+        i = 0;
+        console.log("----c value---- " + c );
+
+    if (c == "forloop") {
+        while (a <= b) {
+
+
+           // console.log("a-val: " + a + " | b-val: " + b);
+            startLoop = labels.get('forloop:');
+            i++;
+            executeInstruction(startLoop);
+
+           // console.log("a-val: " + a + " | b-val: " + b);
+            var increment = startLoop.slice(2, 4);
+            increment = parseInt(increment, 10);
+           // console.log("increment: " + increment);
+            increment += 1;
+           // console.log("increment: " + increment);
+            var nextAddress = "0x";
+            nextAddress += increment;
+            console.log("nextAddress: " + nextAddress);
+            i++;
+            for (i = 1; i < 26; i++) {
+                r = "r";
+                r += i;
+                // console.log("R val: " + r);
+                if (rA == r) {
+                  //  console.log("a = " + a + " | Reg. val = " + r);
+                    a = mem[i];
+
+                    console.log("After setting val, a = " + a);
+                }
+                if (b == r) {
+                   // console.log("b = " + b + " | Reg. val = " + r);
+                    b = mem[i];
+
+                    console.log("After setting val, b = " + b);
+                }
+            }
+            executeInstruction(nextAddress);
+            for (i = 1; i < 26; i++) {
+                r = "r";
+                r += i;
+                // console.log("R val: " + r);
+                if (rA == r) {
+                   // console.log("a = " + a + " | Reg. val = " + r);
+                    a = mem[i];
+
+                    console.log("After setting val, a = " + a);
+                }
+                if (b == r) {
+                 //   console.log("b = " + b + " | Reg. val = " + r);
+                    b = mem[i];
+
+                    console.log("After setting val, b = " + b);
+                }
+            }
+
+          //  console.log("a-val: " + a + " | b-val: " + b);
+            i++;
+
+
         }
-    } else if (currentInstruction === 'bleu') {
+    }
+           // }
+
+
+            // DOWHILE
+
+
+            if (c == "dowhile") {
+                var begin = 0;
+                while (a <= b) {
+                    if (begin == 0) {
+                        console.log("a-val: " + a + " | b-val: " + b);
+                        startLoop = labels.get('dowhile:');
+                        console.log("startLoop address: " + startLoop);
+                        i++;
+
+                        executeInstruction(startLoop);
+                        increment = startLoop.slice(2, 4);
+
+                        begin = 1;
+                    }
+
+
+                   // console.log("a-val: " + a + " | b-val: " + b);
+
+                  //  console.log("increment: " + increment);
+                    nextAddress = "0x";
+                    nextAddress += increment;
+                    if (nextAddress == "0x48"){
+                        begin = 0;
+                    }
+                    console.log("nextAddress: " + nextAddress);
+                    i++;
+                    for (i = 1; i < 26; i++) {
+                        r = "r";
+                        r += i;
+                        // console.log("R val: " + r);
+                        if (rA == r) {
+                        //    console.log("a = " + a + " | Reg. val = " + r);
+                            a = mem[i];
+
+                            console.log("After setting val, a = " + a);
+                        }
+                        if (b == r) {
+                          //  console.log("b = " + b + " | Reg. val = " + r);
+                            b = mem[i];
+
+                            console.log("After setting val, b = " + b);
+                        }
+                    }
+                    executeInstruction(nextAddress);
+                    for (i = 1; i < 26; i++) {
+                        r = "r";
+                        r += i;
+                        // console.log("R val: " + r);
+                        if (rA == r) {
+                           // console.log("a = " + a + " | Reg. val = " + r);
+                            a = mem[i];
+
+                            console.log("After setting val, a = " + a);
+                        }
+                        if (b == r) {
+                           // console.log("b = " + b + " | Reg. val = " + r);
+                            b = mem[i];
+
+                            console.log("After setting val, b = " + b);
+                        }
+                    }
+
+                   // console.log("a-val: " + a + " | b-val: " + b);
+                    i++;
+                    increment = nextAddress.slice(2, 4);
+                    increment = parseInt(increment, 10);
+                    //  console.log("increment: " + increment);
+                    increment += 1;
+                }
+            }
+
+
+        // if(mem[rA][0] <= mem[rB][0]) {
+        //     //TODO: set pc to label from map
+        // } else {
+            //return 1;
+       // }
+    //}
+
+    //     // if(mem[rA][0] <= mem[rB][0]) {
+    //     //     //TODO: set pc to label from map
+    //     // } else {
+    //     //return 1;
+    //     // }
+    // } else if (currentInstruction === 'bleu') {
 
     } else if (currentInstruction === 'blt') {
-        if(mem[rA][0] < mem[rB][0]) {
-            //TODO: set pc to label from map
-        } else {
+        // if(mem[rA][0] < mem[rB][0]) {
+        //     //TODO: set pc to label from map
+        // } else {
             return 1;
-        }
+       // }
     } else if (currentInstruction === 'bltu') {
 
     } else if (currentInstruction === 'bne') {
-        if(mem[rA][0] != mem[rB][0]) {
-            //TODO: return label from map
-        } else {
+        // if(mem[rA][0] != mem[rB][0]) {
+        //     //TODO: return label from map
+        // } else {
             return 1;
-        }
+     //   }
     } else if (currentInstruction === 'br') {
         // TODO: get label from map and return it
     } else if (currentInstruction === 'cmpeqi') {
 
     } else if (currentInstruction === 'cmpge') {
-        if (mem[rB][0] >= mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] >= mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
         return 1;
     } else if (currentInstruction === 'cmpgeui') {
 
@@ -488,11 +702,11 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'cmpgtui') {
 
     } else if (currentInstruction === 'cmple') {
-        if (mem[rB][0] <= mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] <= mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
     } else if (currentInstruction === 'cmplei') {
 
     } else if (currentInstruction === 'cmpleu') {
@@ -519,6 +733,7 @@ function executeInstruction(address) {
 
     } else if (currentInstruction === 'movi') {
         a = b;
+        console.log("a-val After movi: " + a);
 
     } else if (currentInstruction === 'movia') {
 
@@ -546,16 +761,29 @@ function executeInstruction(address) {
     // J Types --------------------------------------------------------------------------------------------
     else if (currentInstruction === 'call') {
         // Use map to return address of label in instruction, set r31 to pc + 1;
-        mem[0x1F][0] = pc+1;
+        // mem[0x1F][0] = pc+1;
         // TODO: get label from map
     } else if (currentInstruction === 'jmpi') {
-            return jImmediate;
+        return 1;
+           // return jImmediate;
     } else if (currentInstruction === 'nop') {
         return 1;
     } else {
         console.error('Instruction was not able to be identified by the instruction handler');
     }
-    write(address,);
+
+    console.log("SETTING MEMORY VALUE");
+    for (var i = 1; i < 32; i++){
+        r = "r";
+        r += i;
+        if (rA == r){
+            console.log("Writing memory: " + "mem["  + i + "]" +  " With value: " + a);
+            mem[i] = a;
+            console.log("mem["  + i + "] = " + mem[i]);
+        }
+    }
+    console.log("---------------------------------------");
+   // write(address,);
 }
 
 function toHex(register) {
