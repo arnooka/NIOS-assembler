@@ -374,7 +374,7 @@ function executeInstruction(address) {
         write(parseOutReg(a), read(parseOutReg(b)) / read(parseOutReg(c)));
         return 1;
     } else if (currentInstruction === 'divu') {
-        if (unsignedB == 0) {
+        if (unsignedC === 0) {
             return 'Divide by 0 error'
         }
         write(parseOutReg(a), unsignedB / unsignedC);
@@ -555,27 +555,67 @@ function executeInstruction(address) {
         }
         return 1;
     } else if (currentInstruction === 'cmpgtu') {
-
-    } else if (currentInstruction === 'cmpgtui') {
-
-    } else if (currentInstruction === 'cmple') {
-        if (mem[rB][0] <= mem[rC][0]) {
-            mem[rA][0] = 1;
+        if (unsignedB > unsignedC) {
+            write(parseOutReg(a), 1);
         } else {
-            mem[rA][0] = 0;
+            write(parseOutReg(a), 0);
         }
+        return 1;
+    } else if (currentInstruction === 'cmpgtui') {
+        if (unsignedB > unsignedC) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+    } else if (currentInstruction === 'cmple') {
+        if (read(parseOutReg(b)) <= read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmplei') {
-
+        if (read(parseOutReg(b)) <= parseInt(c)) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmpleu') {
-
+        if (unsignedB <= unsignedC) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmpleui') {
-
+        if (unsignedB <= parseInt(unsignedC)) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmplti') {
-
+        if (read(parseOutReg(b)) < parseInt(c)) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmpltui') {
-
+        if (unsignedB < parseInt(unsignedC)) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmpnei') {
-
+        if (unsignedB < parseInt(unsignedC)) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'ldb') {
 
     } else if (currentInstruction === 'ldbu') {
