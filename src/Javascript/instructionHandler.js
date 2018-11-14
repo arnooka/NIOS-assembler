@@ -285,18 +285,17 @@ function executeInstruction(address) {
         return 'Cannot write to r0';
     }
     let currentInstruction = instruction[0];
-    let a = (instruction[1]);
-    let b = null;
-    let c = null;
-    let unsignedA = (read(parseOutReg(a)) << 1) >> 1;  // for unsigned operations
-    let unsignedB = (read(parseOutReg(b)) << 1) >> 1;  // for unsigned operations
-    let unsignedC = (read(parseOutReg(c)) << 1) >> 1;  // for unsigned operations
+    let a = (instruction[1]), b = null, c = null;
+    // For unsigned operations
+    let unsignedA = (read(parseOutReg(a)) << 1) >> 1, unsignedB = null, unsignedC = null;
     if(instruction[2]) {
         b = (instruction[2]);
+        unsignedB = (read(parseOutReg(b)) << 1) >> 1;
         console.log("b: " + b);
     }
     if (instruction[3]) {
         c = parseOutReg(instruction[3]);
+        unsignedC = (read(parseOutReg(c)) << 1) >> 1;
         console.log("c: " + c);
     }
 
@@ -585,16 +584,21 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'ldhu') {
 
     } else if (currentInstruction === 'ldw') {
-
+        if (isNaN(b)) {
+            c = b;
+            b = 0;
+        }
+        let value = read(parseOutReg(c) + parseInt(b));
+        write(parseOutReg(a), value)
+        return 1;
     } else if (currentInstruction === 'movhi') {
 
-    } else if (currentInstruction === 'movi') {
-        b = c;
-
-    } else if (currentInstruction === 'movia') {
-
+    } else if (currentInstruction === 'movi' || currentInstruction === 'movia') {
+        write(parseOutReg(a), parseInt(b));
+        return 1;
     } else if (currentInstruction === 'movui') {
-
+        write(parseOutReg(a), parseInt(unsignedB));
+        return 1;
     } else if (currentInstruction === 'muli') {
         let value = read(parseOutReg(b)) * parseInt(c);
         write(parseOutReg(a), value);
