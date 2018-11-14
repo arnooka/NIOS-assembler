@@ -1,25 +1,14 @@
 // IMPORTANT GLOBALS
-let pc = 1;
-const MEM_OFFSET = 64;
+const pc = 1;
+const memoryOffset = 64;
+var instruction = [];
+let address = 0;
+var skip = 0;
+
 // IMPORTANT GLOBALS
 
 function main() {
-    let address = generateAddress(pc);
-    let tempVal = executeInstruction(address);
-    if (isNaN(tempVal)) {
-        alert('Error at ' + address + ': ' + tempVal);
-        // TODO: Set boolean logic to stop program
-    } else if (tempVal === 'break') {
-        // TODO: end execution
-    } else {
-        if (tempVal === 1){
-            pc++;
-        } else {
-            pc = tempVal
-        }
-    }
 
-    // TODO: Make function loop
 }
 
 function instructionHandler() {
@@ -30,7 +19,7 @@ function initGUI() {
 
 function verifyFile() {
     // Verify correct file type
-    console.clear();
+    //console.clear();
     console.log("Verifying File '" + asmFile.name + "'");
     let extension = asmFile.name.toLowerCase().substr((asmFile.name.lastIndexOf('.') + 1));
     if (!/(asm|txt)$/ig.test(extension)) {
@@ -44,23 +33,36 @@ function verifyFile() {
     reader.readAsText(asmFile);
     let fullFile = "";
     reader.onload = function () {
-        // TODO: Clear memory and label map on new file upload
         fullFile += reader.result.replace(/,/g, ';').split('\n');
         const lines = fullFile.split(',');
 
         let memoryAddress = 1;
         let fileLine = 1;
-        let dataArea = false;
         for (let i = 0; i < lines.length; i++) {
             // Parse instruction and generate memory address for instruction
             let instruction = parseInstruction(lines[i]);
             if (instruction.length > 0) console.log(instruction);
             let address = generateAddress(memoryAddress);
-
+            //console.log("INSTRUCTION: " + instruction[0]);
             // Verify instruction
+            if (instruction[0] == "dowhile:"){
+                console.log("SKIPPING NEXT INSTRUCTION UNTIL DOWHILE IS CALLED");
+                skip = 1;
+            }
             if (dict.has(instruction[0])) {
+
+
                 write(address, instruction);
+                //console.log("ADDRESS: " + address);
+                //EXECUTE INSTRUCTION
+                if (skip != 1) {
+                    performInstruction(address);
+                }else{
+                    console.log("INSTRUCTION " + instruction + " SKIPPED");
+                }
+                skip = 0;
             } else if (instruction.length === 0 || instruction[0] === null || instruction[0].match(/^ *$/) !== null) {
+                // Line is empty
                 memoryAddress--;
             } else if (instruction[0].indexOf(':') > -1) {
                 // Label found: Make sure ':' is the last character of the label
@@ -73,42 +75,38 @@ function verifyFile() {
                     for (let j = 1; j < instruction.length; j++) newInstruction.push(instruction[j]);
                     instruction = newInstruction;
                 }
-
                 // Add label to label map
-                labels.set(instruction[0].replace(':', ''), address);
+                labels.set(instruction[0], address);
 
                 // Get instruction if it is on the same line as the label and add it to memory
                 if(instruction.length > 1) {
                     let tempInstruction = [];
                     for (let j = 1; j < instruction.length; j++) tempInstruction.push(instruction[j]);
-                    //console.log(tempInstruction);
+                    console.log(tempInstruction);
                     write(address, tempInstruction);
+
+
+
                 } else {
                     memoryAddress--;
                 }
-            } else if (!dict.has(instruction[0]) && dataArea) {
-                if (instruction[0] === '.end'){
-                    break;
-                }
-                write(address, instruction);
-            }else if (instruction[0].indexOf('.') === 0 && !dataArea) {
+            } else if (instruction[0].indexOf('.') === 0) {
                 //console.log('Line is a heading: ' + instruction[0]);
-                if(instruction[0] === '.data'){
-                    //console.log('Found .data heading');
-                    dataArea = true;
-                }
                 memoryAddress--;
             } else if (instruction[0].indexOf('#') === 0) {
-                    memoryAddress--;
+                memoryAddress--;
             } else {
                 alert('(Line ' + fileLine + '): \'' + instruction[0] + '\' is not a proper instruction');
                 break;
             }
+
             memoryAddress++;
             fileLine++;
         }
         console.log(labels);
-        console.log(mem);
+        console.log("dowhile address location: " + labels.get('dowhile:'));
+        console.log("forloop address location: " + labels.get('forloop:'));
+
     };
 }
 
@@ -121,12 +119,13 @@ function parseInstruction(line) {
     const tempArr = line.split(',');
     const instruction = [];
     for (let j = 0; j < tempArr.length; j++) {
-        if (tempArr[j].indexOf('#') === 0 || tempArr.indexOf('//') === 0) {
+        if (tempArr[j] === '#') {
             break;
         } else if (tempArr[j] === null || tempArr[j].match(/^ *$/) !== null) {
-            continue;
+            // Array entry empty: Do nothing
+        } else {
+            instruction.push(tempArr[j]);
         }
-        instruction.push(tempArr[j]);
     }
     return instruction;
 }
@@ -134,13 +133,16 @@ function parseInstruction(line) {
 function generateAddress(memoryAddress) {
     let address = null;
     if (memoryAddress === 1){
-        address = '0x' + (MEM_OFFSET).toString(16);
+        address = '0x' + (memoryOffset).toString(16);
     } else {
-        address = '0x' + (MEM_OFFSET + memoryAddress - 1).toString(16);
+        address = '0x' + (memoryOffset + memoryAddress - 1).toString(16);
     }
+    //console.log("MEMADDRESS: " + address);
+
     return address;
 }
 
-function setPC(hexAddress) {
-    return parseInt(hexAddress) - MEM_OFFSET;
+function performInstruction(address){
+
+    executeInstruction(address);
 }

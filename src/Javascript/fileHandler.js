@@ -11,7 +11,7 @@ const dict = new Map([['add','r'], ['addi','i'], ['and','r'], ['andhi','i'], ['a
 ['ori','i'], ['rdctl','r'], ['rdprs','i'], ['ret','r'], ['rol','r'], ['roli','i'], ['ror','r'], ['sll','r'],
 ['slli','i'], ['sra','r'], ['srai','i'], ['srl','r'], ['srli','i'], ['stb','i'], ['stbio','i'], ['sth','i'],
 ['sthio','i'], ['stw','i'],['stwio','i'], ['sub','r'], ['subi','i'], ['sync','r'], ['trap','r'], ['wrctl','r'],
-['wrprs','r'], ['xor','r'], ['xorhi','i'], ['xori','i']
+['wrprs','r'], ['xor','r'], ['xorhi','i'], ['xori','i'],['dowhile','j']
 ]);
 const labels = new Map();
 

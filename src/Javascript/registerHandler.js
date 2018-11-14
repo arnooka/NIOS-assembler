@@ -50,6 +50,7 @@ function afterFile() {
 
 function addRow() {
 
+
    // console.log("address: " + address);
     instruction = read("0x41");
     console.log("REGH_INSTRUCTION: " + instruction);
@@ -74,8 +75,9 @@ function addRow() {
     for (i = 0; i  < 32; i++) {
         var r = "r";
         r += i;
+
         clist.append(
-            `<tr><td >${r}</td>` + "<td>" + mem["0x40"] + "</tr></td>"
+            `<tr><td >${r}</td>` + "<td>" + mem[i] + "</tr></td>"
         );
     }
 }
