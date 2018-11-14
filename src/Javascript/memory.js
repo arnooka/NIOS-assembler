@@ -52,58 +52,28 @@ var mem = [];
 
 /* set up function of the memory */
 function memoryInit(){
-
-    mem['0x0'] = 0;  // r0 should never change
-    mem['0x1'] = 0;
-    mem['0x2'] = 0;
-    mem['0x3'] = 0;
-    mem['0x4'] = 0;
-    mem['0x5'] = 0;
-    mem['0x6'] = 0;
-    mem['0x7'] = 0;
-    mem['0x8'] = 0;
-    mem['0x9'] = 0;
-    mem['0xa'] = 0;
-    mem['0xb'] = 0;
-    mem['0xc'] = 0;
-    mem['0xd'] = 0;
-    mem['0xe'] = 0;
-    mem['0xf'] = 0;
-    mem['0x10'] = 0;
-    mem['0x11'] = 0;
-    mem['0x12'] = 0;
-    mem['0x13'] = 0;
-    mem['0x14'] = 0;
-    mem['0x15'] = 0;
-    mem['0x16'] = 0;
-    mem['0x17'] = 0;
-    mem['0x18'] = 0;
-    mem['0x19'] = 0;
-    mem['0x1a'] = 0;
-    mem['0x1b'] = 0;     // Global Pointer
-    mem['0x1c'] = 0;     // Stack Pointer
-    mem['0x1d'] = 0;     // Frame Pointer
-    mem['0x1e'] = 0;     // Exception Return Address
-    mem['0x1f'] = 0;     // Status Register
-
-
-
+    /*Initializing all registers in memory to zero
+    * Ex. mem[1] = r1 mem[2] = r2 ... mem[25] = r25 */
+    for (let i = 0; i < 26; i++){
+        let address = '0x' + (i).toString(16);
+        mem[address] = 0;
+        // console.log("i val: " + i);
+        // console.log("mem[" + i + "]: " + mem[i]);
+    }
     // Declare Special Registers
     // TODO: find what these should be initialized as
-    // mem[26] = 0;            // Global Pointer
-    // mem[27] = 0;            // Stack Pointer
-    // mem[28] = 0;            // Frame Pointer
-    // mem[29] = 0;            // Exception Return Address
-    // mem[30] = 0;            // Status Register
-    // mem[31] = 0x40;         // Return Address
-
+    //mem['0x1a'] = 0;    // r26: Global Pointer
+    //mem['0x1b'] = 0;    // r27: Stack Pointer
+    //mem['0x1c'] = 0;    // r28: Frame Pointer
+    //mem['0x1d'] = 0;    // r29: Exception Return Address
+    //mem['0x1e'] = 0;    // r30: Status Register
+    //mem['0x1f'] = 0;    // r31: Return Address
 }
 
 /* Writes data to memory at a certain address */
 function write(memAddress, data) {
-
     mem[memAddress] = data;
-    console.log("MEM[MEMORYADDRESS] = data: " + mem[memAddress]);
+   //console.log("MEM[MEMORYADDRESS] = data: " + mem[memAddress]);
 }
 
 /* Reads array by address and return whats at that address */
@@ -113,17 +83,18 @@ function read(memAddress) {
 
 /* returns how much free space is left in bytes */
 function spaceFree() {
-    var count = 0, i;
-    for(i = 0; i < MEMORY_SIZE; i++){
-        if(mem[i] != undefined) {
-            count++;
-        }
+    let count = 0;
+    for (let i = 0; i < MEMORY_SIZE; i++) {
+        let address = '0x' + (i).toString(16);
+        if (mem[address] !== undefined) count++;
     }
     return MEMORY_SIZE - count;
 }
 
-//For testing
+memoryInit();
 
+//For testing
+/*
 var i;
 
 var arr = ["andi", "r1", "r2", "100"]
@@ -141,3 +112,4 @@ var arr2 = read(10);
 console.log("\nInstruction: " + arr2[0] + "\nRegister: " + arr2[1] + "\nRegister: " + arr2[2] + "\nImmediate: " + arr2[3] + "\n");
 
 console.log(spaceFree());
+*/

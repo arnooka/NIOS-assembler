@@ -12,6 +12,8 @@ var allInstructions = [
     'ldw', 'movhi', 'movi', 'movia', 'movui', 'muli', 'orhi', 'ori', 'stb', 'sth', 'stw', 'subi', 'xorhi', 'xori', 'call', 'jmpi', 'nop'
 ];
 
+
+
 /* R TYPE INSTRUCTIONS
 6-bit opcode field
 Three 5-bit register fields A, B, and C
@@ -270,100 +272,166 @@ function executeOther(Oinstruction, operands) {
     if (!Oinstruction) {
         console.log('No instruction passed to execute other');
         return;
-    } if (Oinstruction === 'nop') {
+    }
+
+    if (Oinstruction === 'nop') {
         // do nothing?
     }
 }
 
 function executeInstruction(address) {
-
+    var r = "";
+    var i;
+    // var startLoop = "";
+    // var startAddress = 0;
+    // if (labels.get('forloop:')){
+    //     if(startAddress == 0) {
+    //         startLoop = address;
+    //         console.log("startLoop: " + startLoop);
+    //         startAddress = 1;
+    //     }
+    // }
     // most r types: mem[PC][1] mem[x] = {0x111, [add, r1,r2,r3]}, access 'add' by  mem[PC][1][0]
     // Get Instruction from mem by going to PC
+    console.log("---------------------------------------");
     console.log("ADDRESS: " + address);
     instruction = read(address);
 
-    console.log("INSTRH_INSTRUCTION: " + instruction);
-    if (instruction[1] == 'r0') {
-        return 'Cannot write to r0';
-    }
+    //console.log("INSTRH_INSTRUCTION: " + instruction);
+   // var currentInstruction = instruction[pc][1][0];
     var currentInstruction = instruction[0];
-    var c = (instruction[1]);
-    var a = null;
-    var b = null;
-    if(instruction[2]) {
-        a = (instruction[2]);
-        console.log("a: " + a);
-    }
+    var specialCase = 0;
+    var c;
+
+// possible temp for reg a
+    var rA = instruction[1];
+
+    console.log("rA: " + rA);
+    var a = instruction[1];
+    var b = instruction[2];
     if (instruction[3]) {
-        b = toHex(instruction[3]);
-        console.log("b: " + b);
+        c = instruction[3];
+        console.log("c: " + c);
+    }
+    console.log("a: " + a);
+    console.log("b: " + b);
+
+    for (i = 1; i < 32; i++){
+        r = "r";
+        r += i;
+       // console.log("R val: " + r);
+        if (a == r){
+            console.log("a = " + a + " | Reg. val = " + r);
+            a = mem[i];
+
+            console.log("After setting val, a = " + a );
+        }
+        if (b == r){
+            console.log("b = " + b + " | Reg. val = " + r);
+            b = mem[i];
+
+            console.log("After setting val, b = " + b );
+        }
+        if (instruction[3]) {
+            if (c == r) {
+                console.log("c = " + c + " | Reg. val = " + r);
+                c = mem[i];
+                c = parseInt(c,10);
+                rC = instruction[3];
+                console.log("After setting val, c = " + c );
+            }
+            // if (instruction[3] == "forloop"){
+            //
+            //     c = "forloop";
+            // }
+            // if (instruction[3] == "dowhile"){
+            //
+            //     c = "dowhile";
+            // }
+            //console.log("c-val: " + c);
+        }
+    }
+    a = parseInt(a,10);
+    b = parseInt(b,10);
+    if (instruction[3] != "forloop" && instruction[3] != "dowhile") {
+        c = parseInt(c, 10);
     }
 
-    console.log("a: " + a);
 
-
+    //var currentInstruction = instruction[0];
 
     console.log("CURRENT INSTRUCTION: " + currentInstruction);
     if (!currentInstruction) {
         console.log('Failure to retrieve instruction from memory in InstructionHandler');
     }
 
+    // Basic R type vars
+    // var rA = toHex(mem[pc][1][1]);
+    // var rB = toHex(mem[pc][1][2]);
+    // var rC = toHex(mem[pc][1][3]);
+    // J type
+   // var jImmediate = mem[pc][1][1];
+    //I Type
+//    var iImmediate = mem[pc][1][3];
+
     //R types ---------------------------------------------------------------------------
-    if (currentInstruction === 'add') {
-        mem[toHex(c)] = mem[toHex(a)] + mem[toHex(b)];
-        // write(toHex(c), read(toHex(a)) + read(toHex(b)));
-        return 1;
+    if (currentInstruction === 'add') {        // add rB and rC, and store in rA
+
+        a = b + c;
+        console.log("add executed. " + rA + " is now = " + a);
+       // mem[rA][0] = mem[rB][0] + mem[rC][0];
+
     } else if (currentInstruction === 'and') {
-        mem[toHex(c)] = mem[toHex(a)] & mem[toHex(b)];
+        // mem[rA][0] = mem[rB][0]&mem[rC][0];
         return 1;
     } else if (currentInstruction === 'break') {
-        return 'break';
+        // stop execution?
     } else if (currentInstruction === 'bret') {
         //breakpoint return, so resume execution?
-        return 1;
     } else if (currentInstruction === 'callr') {
-        mem['0x1f'] = pc + 1;
-        return setPC(read(toHex(c)));
+        // mem[0x1f][0] = pc + 1;
+        return rA;
     } else if (currentInstruction === 'cmpeq') {
-        if (mem[rB][0] == mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] == mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
     } else if (currentInstruction === 'cmpgei') {
 
     } else if (currentInstruction === 'cmpgeu') {
 
     } else if (currentInstruction === 'cmplt') {
-        if (mem[rB][0] < mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] < mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
     } else if (currentInstruction === 'cmpltu') {
 
     } else if (currentInstruction === 'cmpne') {
-        if (mem[rB][0] != mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] != mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
     } else if (currentInstruction === 'custom') {
 
     } else if (currentInstruction === 'div') {
-        if(mem[rC][0] === 0) { //can't divide by 0
-            // TODO: need to return some sort of error status
-        }
-        mem[rA][0] = mem[rB][0] / mem[rC][0];
+        // if(mem[rC][0] === 0) { //can't divide by 0
+        //     // TODO: need to return some sort of error status
+        // }
+        // mem[rA][0] = mem[rB][0] / mem[rC][0];
         return 1;
     } else if (currentInstruction === 'divu') {
 
     } else if (currentInstruction === 'jmp') {
-        return mem[rA][0];
+        //
+        // return mem[rA][0];
     } else if (currentInstruction === 'mov') {
-        mem[rA][0] = mem[rB][0];
+        // mem[rA][0] = mem[rB][0];
     } else if (currentInstruction === 'mul') {
-        mem[rA][0] = mem[rB][0] * mem[rC][0];
+        // mem[rA][0] = mem[rB][0] * mem[rC][0];
     } else if (currentInstruction === 'mulxss') {
 
     } else if (currentInstruction === 'mulxsu') {
@@ -372,17 +440,18 @@ function executeInstruction(address) {
 
     } else if (currentInstruction === 'nextpc') {
         // puts the address of the next instruction in rA;
-        mem[rA][0] = toHex(pc+1);
+        // mem[rA][0] = toHex(pc+1);
     } else if (currentInstruction === 'nor') {
-        mem[rA][0] = mem[rB][0] | mem[rC][0];
-        mem[rA][0] = ~mem[rA][0];
+        // mem[rA][0] = mem[rB][0] | mem[rC][0];
+        // mem[rA][0] = ~mem[rA][0];
         return 1;
     } else if (currentInstruction === 'or') {
-        mem[rA][0] = mem[rB][0] | mem[rC][0];
+        // mem[rA][0] = mem[rB][0] | mem[rC][0];
         return 1;
     } else if (currentInstruction === 'ret') {
         // return to address at r31
-        return mem[0x1F][0];
+        return 1;
+        // return mem[0x1F][0];
     } else if (currentInstruction === 'rol') {
 
     } else if (currentInstruction === 'roli') {
@@ -390,85 +459,237 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'ror') {
 
     } else if (currentInstruction === 'sll') {
-        mem[rA][0] = mem[rB][0] << mem[rC][0];
+        // mem[rA][0] = mem[rB][0] << mem[rC][0];
         return 1;
     } else if (currentInstruction === 'slli') {
 
     } else if (currentInstruction === 'sra') {
-        mem[rA][0] = mem[rB][0] >> mem[rC][0];
+        // mem[rA][0] = mem[rB][0] >> mem[rC][0];
     } else if (currentInstruction === 'srai') {
 
     } else if (currentInstruction === 'srl') {
-        mem[rA][0] = mem[rB][0] >> mem[rC][0];
+        // mem[rA][0] = mem[rB][0] >> mem[rC][0];
         return 1;
     } else if (currentInstruction === 'srli') {
 
     } else if (currentInstruction === 'sub') {
-        mem[rA][0] = mem[rB][0] - mem[rC][0];
+        // mem[rA][0] = mem[rB][0] - mem[rC][0];
         return 1;
     } else if (currentInstruction === 'sync') {
 
     } else if (currentInstruction === 'xor') {
-        mem[rA][0] = mem[rB][0] ^ mem[rC][0];
+        // mem[rA][0] = mem[rB][0] ^ mem[rC][0];
         return 1;
     }
     // I TYPES ------------------------------------------------------------------------------------------------------------
     else if (currentInstruction === 'addi') {
 
+        a = b + c;
+        console.log("addi executed. " + rA + " is now = " + a);
     } else if (currentInstruction === 'andhi') {
 
     } else if (currentInstruction === 'andi') {
 
     } else if (currentInstruction === 'beq') {
-        if (mem[rA][0] == mem[rB][0]) {
-            // TODO Return address of Label from map
-        } else {
+        // if (mem[rA][0] == mem[rB][0]) {
+        //     // TODO Return address of Label from map
+        // } else {
             return 1;
-        }
+       // }
     } else if (currentInstruction === 'bge') {
 
     } else if (currentInstruction === 'bgeu') {
 
     } else if (currentInstruction === 'bgt') {
-        if(mem[rA][0] >= mem[rB][0]) {
-            //TODO: set pc to label from map
-        } else {
+        // if(mem[rA][0] >= mem[rB][0]) {
+        //     //TODO: set pc to label from map
+        // } else {
             return 1;
-        }
+       // }
     } else if (currentInstruction === 'bgtu') {
 
     } else if (currentInstruction === 'ble') {
-        if(mem[rA][0] <= mem[rB][0]) {
-            //TODO: set pc to label from map
-        } else {
-            return 1;
+        var startLoop;
+        i = 0;
+        console.log("----c value---- " + c );
+
+    if (c == "forloop") {
+        while (a <= b) {
+
+
+           // console.log("a-val: " + a + " | b-val: " + b);
+            startLoop = labels.get('forloop:');
+            i++;
+            executeInstruction(startLoop);
+
+           // console.log("a-val: " + a + " | b-val: " + b);
+            var increment = startLoop.slice(2, 4);
+            increment = parseInt(increment, 10);
+           // console.log("increment: " + increment);
+            increment += 1;
+           // console.log("increment: " + increment);
+            var nextAddress = "0x";
+            nextAddress += increment;
+            console.log("nextAddress: " + nextAddress);
+            i++;
+            for (i = 1; i < 26; i++) {
+                r = "r";
+                r += i;
+                // console.log("R val: " + r);
+                if (rA == r) {
+                  //  console.log("a = " + a + " | Reg. val = " + r);
+                    a = mem[i];
+
+                    console.log("After setting val, a = " + a);
+                }
+                if (b == r) {
+                   // console.log("b = " + b + " | Reg. val = " + r);
+                    b = mem[i];
+
+                    console.log("After setting val, b = " + b);
+                }
+            }
+            executeInstruction(nextAddress);
+            for (i = 1; i < 26; i++) {
+                r = "r";
+                r += i;
+                // console.log("R val: " + r);
+                if (rA == r) {
+                   // console.log("a = " + a + " | Reg. val = " + r);
+                    a = mem[i];
+
+                    console.log("After setting val, a = " + a);
+                }
+                if (b == r) {
+                 //   console.log("b = " + b + " | Reg. val = " + r);
+                    b = mem[i];
+
+                    console.log("After setting val, b = " + b);
+                }
+            }
+
+          //  console.log("a-val: " + a + " | b-val: " + b);
+            i++;
+
+
         }
-    } else if (currentInstruction === 'bleu') {
+    }
+           // }
+
+
+            // DOWHILE
+
+
+            if (c == "dowhile") {
+                var begin = 0;
+                while (a <= b) {
+                    if (begin == 0) {
+                        console.log("a-val: " + a + " | b-val: " + b);
+                        startLoop = labels.get('dowhile:');
+                        console.log("startLoop address: " + startLoop);
+                        i++;
+
+                        executeInstruction(startLoop);
+                        increment = startLoop.slice(2, 4);
+
+                        begin = 1;
+                    }
+
+
+                   // console.log("a-val: " + a + " | b-val: " + b);
+
+                  //  console.log("increment: " + increment);
+                    nextAddress = "0x";
+                    nextAddress += increment;
+                    if (nextAddress == "0x48"){
+                        begin = 0;
+                    }
+                    console.log("nextAddress: " + nextAddress);
+                    i++;
+                    for (i = 1; i < 26; i++) {
+                        r = "r";
+                        r += i;
+                        // console.log("R val: " + r);
+                        if (rA == r) {
+                        //    console.log("a = " + a + " | Reg. val = " + r);
+                            a = mem[i];
+
+                            console.log("After setting val, a = " + a);
+                        }
+                        if (b == r) {
+                          //  console.log("b = " + b + " | Reg. val = " + r);
+                            b = mem[i];
+
+                            console.log("After setting val, b = " + b);
+                        }
+                    }
+                    executeInstruction(nextAddress);
+                    for (i = 1; i < 26; i++) {
+                        r = "r";
+                        r += i;
+                        // console.log("R val: " + r);
+                        if (rA == r) {
+                           // console.log("a = " + a + " | Reg. val = " + r);
+                            a = mem[i];
+
+                            console.log("After setting val, a = " + a);
+                        }
+                        if (b == r) {
+                           // console.log("b = " + b + " | Reg. val = " + r);
+                            b = mem[i];
+
+                            console.log("After setting val, b = " + b);
+                        }
+                    }
+
+                   // console.log("a-val: " + a + " | b-val: " + b);
+                    i++;
+                    increment = nextAddress.slice(2, 4);
+                    increment = parseInt(increment, 10);
+                    //  console.log("increment: " + increment);
+                    increment += 1;
+                }
+            }
+
+
+        // if(mem[rA][0] <= mem[rB][0]) {
+        //     //TODO: set pc to label from map
+        // } else {
+            //return 1;
+       // }
+    //}
+
+    //     // if(mem[rA][0] <= mem[rB][0]) {
+    //     //     //TODO: set pc to label from map
+    //     // } else {
+    //     //return 1;
+    //     // }
+    // } else if (currentInstruction === 'bleu') {
 
     } else if (currentInstruction === 'blt') {
-        if(mem[rA][0] < mem[rB][0]) {
-            //TODO: set pc to label from map
-        } else {
+        // if(mem[rA][0] < mem[rB][0]) {
+        //     //TODO: set pc to label from map
+        // } else {
             return 1;
-        }
+       // }
     } else if (currentInstruction === 'bltu') {
 
     } else if (currentInstruction === 'bne') {
-        if(mem[rA][0] != mem[rB][0]) {
-            //TODO: return label from map
-        } else {
+        // if(mem[rA][0] != mem[rB][0]) {
+        //     //TODO: return label from map
+        // } else {
             return 1;
-        }
+     //   }
     } else if (currentInstruction === 'br') {
         // TODO: get label from map and return it
     } else if (currentInstruction === 'cmpeqi') {
 
     } else if (currentInstruction === 'cmpge') {
-        if (mem[rB][0] >= mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] >= mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
         return 1;
     } else if (currentInstruction === 'cmpgeui') {
 
@@ -481,11 +702,11 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'cmpgtui') {
 
     } else if (currentInstruction === 'cmple') {
-        if (mem[rB][0] <= mem[rC][0]) {
-            mem[rA][0] = 1;
-        } else {
-            mem[rA][0] = 0;
-        }
+        // if (mem[rB][0] <= mem[rC][0]) {
+        //     mem[rA][0] = 1;
+        // } else {
+        //     mem[rA][0] = 0;
+        // }
     } else if (currentInstruction === 'cmplei') {
 
     } else if (currentInstruction === 'cmpleu') {
@@ -512,6 +733,7 @@ function executeInstruction(address) {
 
     } else if (currentInstruction === 'movi') {
         a = b;
+        console.log("a-val After movi: " + a);
 
     } else if (currentInstruction === 'movia') {
 
@@ -539,34 +761,49 @@ function executeInstruction(address) {
     // J Types --------------------------------------------------------------------------------------------
     else if (currentInstruction === 'call') {
         // Use map to return address of label in instruction, set r31 to pc + 1;
-        mem[0x1F][0] = pc+1;
+        // mem[0x1F][0] = pc+1;
         // TODO: get label from map
     } else if (currentInstruction === 'jmpi') {
-            return jImmediate;
+        return 1;
+           // return jImmediate;
     } else if (currentInstruction === 'nop') {
         return 1;
     } else {
         console.error('Instruction was not able to be identified by the instruction handler');
     }
 
-    // write(address,);
+    console.log("SETTING MEMORY VALUE");
+    for (var i = 1; i < 32; i++){
+        r = "r";
+        r += i;
+        if (rA == r){
+            console.log("Writing memory: " + "mem["  + i + "]" +  " With value: " + a);
+            mem[i] = a;
+            console.log("mem["  + i + "] = " + mem[i]);
+        }
+    }
+    console.log("---------------------------------------");
+   // write(address,);
 }
 
 function toHex(register) {
+    if (register.includes('r') && register !== undefined){
 
-    register = register.replace('r','');
+
+        register = register.replace('r','');
+        }
     var parsed = parseInt(register);
 
     if (isNaN(parsed)) {
-        console.error('Register conversion in toHex function failed, register is not a number. Current PC is: ' + pc);
+        console.error('Register conversion in toHex function failed, register is not a numer. Current PC is: ' + pc);
         return register;
     }
-    if (parsed === 10) {parsed = 'a'}
-    else if (parsed === 11) {parsed = 'b'}
-    else if (parsed === 12) {parsed = 'c'}
-    else if (parsed === 13) {parsed = 'd'}
-    else if (parsed === 14) {parsed = 'e'}
-    else if (parsed === 15) {parsed = 'f'}
+    if (parsed === 10) {parsed = 'A'}
+    else if (parsed === 11) {parsed = 'B'}
+    else if (parsed === 12) {parsed = 'C'}
+    else if (parsed === 13) {parsed = 'D'}
+    else if (parsed === 14) {parsed = 'E'}
+    else if (parsed === 15) {parsed = 'F'}
     else if (parsed === 16) {parsed = '10'}
     else if (parsed === 17) {parsed = '11'}
     else if (parsed === 18) {parsed = '12'}
@@ -577,12 +814,12 @@ function toHex(register) {
     else if (parsed === 23) {parsed = '17'}
     else if (parsed === 24) {parsed = '18'}
     else if (parsed === 25) {parsed = '19'}
-    else if (parsed === 26) {parsed = '1a'}
-    else if (parsed === 27) {parsed = '1b'}
-    else if (parsed === 28) {parsed = '1c'}
-    else if (parsed === 29) {parsed = '1d'}
-    else if (parsed === 30) {parsed = '1e'}
-    else if (parsed === 31) {parsed = '1f'}
+    else if (parsed === 26) {parsed = '1A'}
+    else if (parsed === 27) {parsed = '1B'}
+    else if (parsed === 28) {parsed = '1C'}
+    else if (parsed === 29) {parsed = '1D'}
+    else if (parsed === 30) {parsed = '1E'}
+    else if (parsed === 31) {parsed = '1F'}
 
 
     parsed = '0x' + parsed;

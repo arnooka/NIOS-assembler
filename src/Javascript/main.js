@@ -54,7 +54,13 @@ function verifyFile() {
             if (instruction.length > 0) console.log(instruction);
             let address = generateAddress(memoryAddress);
 
-            // Verify instruction
+            // Check if space is available in memory
+            if (memoryAddress > (MEMORY_SIZE - MEM_OFFSET)) {
+                alert('Total instruction count exceeds memory limit: ' + MEMORY_SIZE - MEM_OFFSET + ' blocks');
+                break;
+            }
+
+            // Verify and add instruction to memory
             if (dict.has(instruction[0])) {
                 write(address, instruction);
             } else if (instruction.length === 0 || instruction[0] === null || instruction[0].match(/^ *$/) !== null) {
@@ -104,8 +110,8 @@ function verifyFile() {
             memoryAddress++;
             fileLine++;
         }
-        console.log(labels);
-        console.log(mem);
+        //console.log(labels);
+        //console.log(mem);
     };
 }
 
