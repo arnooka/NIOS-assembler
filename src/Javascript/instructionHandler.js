@@ -281,22 +281,22 @@ function executeInstruction(address) {
 
     let instruction = read(address);
 
-    if (instruction[1] == 'r0') {
+    if (instruction[1] === 'r0') {
         return 'Cannot write to r0';
     }
     let currentInstruction = instruction[0];
-    let c = (instruction[1]);
-    let a = null;
+    let a = (instruction[1]);
     let b = null;
-    let unsignedA = (read(parseOutReg(a)) << 1) >> 1;  // for unsigned operations
-    let unsignedB = (read(parseOutReg(b)) << 1) >> 1;  // for unsigned operations
+    let c = null;
+    let unsignedA = (read(parseOutReg(b)) << 1) >> 1;  // for unsigned operations
+    let unsignedB = (read(parseOutReg(c)) << 1) >> 1;  // for unsigned operations
     if(instruction[2]) {
-        a = (instruction[2]);
-        console.log("a: " + a);
+        b = (instruction[2]);
+        console.log("b: " + b);
     }
     if (instruction[3]) {
-        b = parseOutReg(instruction[3]);
-        console.log("b: " + b);
+        c = parseOutReg(instruction[3]);
+        console.log("c: " + c);
     }
 
     if (!currentInstruction) {
@@ -305,13 +305,13 @@ function executeInstruction(address) {
 
     //R types ---------------------------------------------------------------------------
     if (currentInstruction === 'add') {
-        // mem[parseOutReg(c)] = mem[parseOutReg(a)] + mem[parseOutReg(b)];
-        let result = read(parseOutReg(a)) + read(parseOutReg(b));
-        write(parseOutReg(c), result);
+        // mem[parseOutReg(a)] = mem[parseOutReg(b)] + mem[parseOutReg(c)];
+        let result = read(parseOutReg(b)) + read(parseOutReg(c));
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'and') {
-        let result = read(parseOutReg(a)) & read(parseOutReg(b));
-        write(parseOutReg(c), result);
+        let result = read(parseOutReg(b)) & read(parseOutReg(c));
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'break') {
         return 'break';
@@ -320,95 +320,95 @@ function executeInstruction(address) {
         return 1;
     } else if (currentInstruction === 'callr') {
         mem['0x1f'] = pc + 1;
-        return read(parseOutReg(c));
+        return read(parseOutReg(a));
     } else if (currentInstruction === 'cmpeq') {
-        if (read(parseOutReg(a)) == read(parseOutReg(b))) {
-            write(parseOutReg(c), 1);
+        if (read(parseOutReg(b)) === read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
         } else {
-            write(parseOutReg(c), 0);
+            write(parseOutReg(a), 0);
         }
         return 1;
     } else if (currentInstruction === 'cmpgei') {
-        if (read(parseOutReg(a)) >= read(parseOutReg(b))) {
-            write(parseOutReg(c), 1);
+        if (read(parseOutReg(b)) >= read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
         } else {
-            write(parseOutReg(c), 0);
+            write(parseOutReg(a), 0);
         }
         return 1;
     } else if (currentInstruction === 'cmpgeu') {
         if (unsignedA >= unsignedB) {
-            write(parseOutReg(c), 1);
+            write(parseOutReg(a), 1);
         } else {
-            write(parseOutReg(c), 0);
+            write(parseOutReg(a), 0);
         }
         return 1;
     } else if (currentInstruction === 'cmplt') {
-        if (read(parseOutReg(a)) <= read(parseOutReg(b))) {
-            write(parseOutReg(c), 1);
+        if (read(parseOutReg(b)) <= read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
         } else {
-            write(parseOutReg(c), 0);
+            write(parseOutReg(a), 0);
         }
         return 1;
     } else if (currentInstruction === 'cmpltu') {
 
         if (unsignedA <= unsignedB) {
-            write(parseOutReg(c), 1);
+            write(parseOutReg(a), 1);
         } else {
-            write(parseOutReg(c), 0);
+            write(parseOutReg(a), 0);
         }
         return 1;
     } else if (currentInstruction === 'cmpne') {
-        if (read(parseOutReg(a)) != read(parseOutReg(b))) {
-            write(parseOutReg(c), 1);
+        if (read(parseOutReg(b)) != read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
         } else {
-            write(parseOutReg(c), 0);
+            write(parseOutReg(a), 0);
         }
         return 1;
     } else if (currentInstruction === 'custom') {
         return 1;
     } else if (currentInstruction === 'div') {
-        if (read(parseOutReg(b)) == 0) {
+        if (read(parseOutReg(c)) == 0) {
             return 'Divide by 0 error'
         }
-        write(parseOutReg(c), read(parseOutReg(a)) / read(parseOutReg(b)));
+        write(parseOutReg(a), read(parseOutReg(b)) / read(parseOutReg(c)));
         return 1;
     } else if (currentInstruction === 'divu') {
         if (unsignedB == 0) {
             return 'Divide by 0 error'
         }
-        write(parseOutReg(c), unsignedA / unsignedB);
+        write(parseOutReg(a), unsignedA / unsignedB);
         return 1;
     } else if (currentInstruction === 'jmp') {
-        return read(parseOutReg(c));
+        return read(parseOutReg(a));
     } else if (currentInstruction === 'mov') {
-        write(parseOutReg(c), parseOutReg(a))
+        write(parseOutReg(a), parseOutReg(b))
     } else if (currentInstruction === 'mul') {
-        let result = read(parseOutReg(a)) * read(parseOutReg(b));
-        write(parseOutReg(c), result);
+        let result = read(parseOutReg(b)) * read(parseOutReg(c));
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'mulxss') {
-        let result = read(parseOutReg(a)) * read(parseOutReg(b));
-        write(parseOutReg(c), result);
+        let result = read(parseOutReg(b)) * read(parseOutReg(c));
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'mulxsu') {
-        let result = read(parseOutReg(a)) * read(parseOutReg(b));
-        write(parseOutReg(c), result);
+        let result = read(parseOutReg(b)) * read(parseOutReg(c));
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'mulxuu') {
         let result = unsignedA * unsignedB;
-        write(parseOutReg(c), result);
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'nextpc') {
         // puts the address of the next instruction in the register;
-         write(parseOutReg(c), pc+1);
+         write(parseOutReg(a), pc+1);
     } else if (currentInstruction === 'nor') {
-        let result = read(parseOutReg(a)) | read(parseOutReg(b));
+        let result = read(parseOutReg(b)) | read(parseOutReg(c));
         result = ~result;
-        write(parseOutReg(c), result);
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'or') {
-        let result = read(parseOutReg(a)) | read(parseOutReg(b));
-        write(parseOutReg(c), result);
+        let result = read(parseOutReg(b)) | read(parseOutReg(c));
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'ret') {
         // return to address at r31
@@ -420,20 +420,20 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'ror') {
 
     } else if (currentInstruction === 'sll') {
-        let result = read(parseOutReg(a)) << read(parseOutReg(b));
-        write(parseOutReg(c), result);
+        let result = read(parseOutReg(b)) << read(parseOutReg(c));
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'slli') {
-        let result = read(parseOutReg(a)) << parseInt(b);
-        write(parseOutReg(c), result);
+        let result = read(parseOutReg(b)) << parseInt(c);
+        write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'sra') {
-        write(parseOutReg(c), read(parseOutReg(a)) >>> read(parseOutReg(b)));
+        write(parseOutReg(a), read(parseOutReg(b)) >>> read(parseOutReg(c)));
         return 1;
     } else if (currentInstruction === 'srai') {
 
     } else if (currentInstruction === 'srl') {
-        write(parseOutReg(c), read(parseOutReg(a)) >> read(parseOutReg(b)));
+        write(parseOutReg(a), read(parseOutReg(b)) >> read(parseOutReg(c)));
         return 1;v
     } else if (currentInstruction === 'srli') {
 
@@ -449,8 +449,8 @@ function executeInstruction(address) {
     // I TYPES ------------------------------------------------------------------------------------------------------------
     else if (currentInstruction === 'addi') {
 
-        a = b + c;
-        console.log("addi executed. " + rA + " is now = " + a);
+        b = c + a;
+        console.log("addi executed. " + rA + " is now = " + b);
     } else if (currentInstruction === 'andhi') {
 
     } else if (currentInstruction === 'andi') {
@@ -496,10 +496,10 @@ function executeInstruction(address) {
             return 1;
         }
     } else if (currentInstruction === 'br') {
-        if(isNaN(parseInt(c))) {
-            return parseInt(labels.get(c));
+        if(isNaN(parseInt(a))) {
+            return parseInt(labels.get(a));
         }
-        return parseInt(c);
+        return parseInt(a);
     } else if (currentInstruction === 'cmpeqi') {
 
     } else if (currentInstruction === 'cmpge') {
@@ -550,7 +550,7 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'movhi') {
 
     } else if (currentInstruction === 'movi') {
-        a = b;
+        b = c;
 
     } else if (currentInstruction === 'movia') {
 
