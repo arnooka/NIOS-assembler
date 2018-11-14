@@ -288,8 +288,9 @@ function executeInstruction(address) {
     let a = (instruction[1]);
     let b = null;
     let c = null;
-    let unsignedA = (read(parseOutReg(b)) << 1) >> 1;  // for unsigned operations
-    let unsignedB = (read(parseOutReg(c)) << 1) >> 1;  // for unsigned operations
+    let unsignedA = (read(parseOutReg(a)) << 1) >> 1;  // for unsigned operations
+    let unsignedB = (read(parseOutReg(b)) << 1) >> 1;  // for unsigned operations
+    let unsignedC = (read(parseOutReg(c)) << 1) >> 1;  // for unsigned operations
     if(instruction[2]) {
         b = (instruction[2]);
         console.log("b: " + b);
@@ -336,7 +337,7 @@ function executeInstruction(address) {
         }
         return 1;
     } else if (currentInstruction === 'cmpgeu') {
-        if (unsignedA >= unsignedB) {
+        if (unsignedB >= unsignedC) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
@@ -351,7 +352,7 @@ function executeInstruction(address) {
         return 1;
     } else if (currentInstruction === 'cmpltu') {
 
-        if (unsignedA <= unsignedB) {
+        if (unsignedB <= unsignedC) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
@@ -376,7 +377,7 @@ function executeInstruction(address) {
         if (unsignedB == 0) {
             return 'Divide by 0 error'
         }
-        write(parseOutReg(a), unsignedA / unsignedB);
+        write(parseOutReg(a), unsignedB / unsignedC);
         return 1;
     } else if (currentInstruction === 'jmp') {
         return read(parseOutReg(a));
@@ -395,7 +396,7 @@ function executeInstruction(address) {
         write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'mulxuu') {
-        let result = unsignedA * unsignedB;
+        let result = unsignedB * unsignedC;
         write(parseOutReg(a), result);
         return 1;
     } else if (currentInstruction === 'nextpc') {
@@ -434,64 +435,82 @@ function executeInstruction(address) {
 
     } else if (currentInstruction === 'srl') {
         write(parseOutReg(a), read(parseOutReg(b)) >> read(parseOutReg(c)));
-        return 1;v
+        return 1;
     } else if (currentInstruction === 'srli') {
 
     } else if (currentInstruction === 'sub') {
-        // mem[rA][0] = mem[rB][0] - mem[rC][0];
+        write(parseOutReg(a), read(parseOutReg(b)) - read(parseOutReg(c)));
         return 1;
     } else if (currentInstruction === 'sync') {
-
+        return 1;
     } else if (currentInstruction === 'xor') {
-        // mem[rA][0] = mem[rB][0] ^ mem[rC][0];
+        write(parseOutReg(a), read(parseOutReg(b)) ^ read(parseOutReg(c)));
         return 1;
     }
     // I TYPES ------------------------------------------------------------------------------------------------------------
     else if (currentInstruction === 'addi') {
-
-        b = c + a;
-        console.log("addi executed. " + rA + " is now = " + b);
+        write(parseOutReg(a), read(parseOutReg(b)) + parseInt(c));
     } else if (currentInstruction === 'andhi') {
 
     } else if (currentInstruction === 'andi') {
-
+        write(parseOutReg(a), read(parseOutReg(b)) & parseInt(c));
     } else if (currentInstruction === 'beq') {
-        if (mem[rA][0] == mem[rB][0]) {
-            // TODO Return address of Label from map
+        if (read(parseOutReg(a)) == read(parseOutReg(b))) {
+            return labels.get(c);
         } else {
             return 1;
         }
     } else if (currentInstruction === 'bge') {
-
+        if (read(parseOutReg(a)) >= read(parseOutReg(b))) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'bgeu') {
-
+        if (read(parseOutReg(a)) >= read(parseOutReg(b))) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'bgt') {
-        if(mem[rA][0] >= mem[rB][0]) {
-            //TODO: set pc to label from map
+        if (read(parseOutReg(a)) > read(parseOutReg(b))) {
+            return labels.get(c);
         } else {
             return 1;
         }
     } else if (currentInstruction === 'bgtu') {
-
+        if (unsignedA > unsignedB) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'ble') {
-        if(mem[rA][0] <= mem[rB][0]) {
-            //TODO: set pc to label from map
+        if (read(parseOutReg(a)) <= read(parseOutReg(b))) {
+            return labels.get(c);
         } else {
             return 1;
         }
     } else if (currentInstruction === 'bleu') {
-
+        if (unsignedA <= unsignedB) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'blt') {
-        if(mem[rA][0] < mem[rB][0]) {
-            //TODO: set pc to label from map
+        if (read(parseOutReg(a)) < read(parseOutReg(b))) {
+            return labels.get(c);
         } else {
             return 1;
         }
     } else if (currentInstruction === 'bltu') {
-
+        if (unsignedA < unsignedB) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
     } else if (currentInstruction === 'bne') {
-        if(mem[rA][0] != mem[rB][0]) {
-            //TODO: return label from map
+        if(read(parseOutReg(a)) != read(parseOutReg(b))) {
+            return labels.get(c);
         } else {
             return 1;
         }
@@ -501,20 +520,35 @@ function executeInstruction(address) {
         }
         return parseInt(a);
     } else if (currentInstruction === 'cmpeqi') {
-
-    } else if (currentInstruction === 'cmpge') {
-        if (mem[rB][0] >= mem[rC][0]) {
-            mem[rA][0] = 1;
+        if(read(parseOutReg(b) == parseInt(c))) {
+            write(parseOutReg(a), 1);
         } else {
-            mem[rA][0] = 0;
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (currentInstruction === 'cmpge') {
+        if (read(parseOutReg(b)) >= read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
         }
         return 1;
     } else if (currentInstruction === 'cmpgeui') {
-
+        if (read(parseOutReg(b)) >= parseInt(c)) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmpgt') {
-
+        if (read(parseOutReg(b)) > read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
     } else if (currentInstruction === 'cmpgti') {
-
+        
     } else if (currentInstruction === 'cmpgtu') {
 
     } else if (currentInstruction === 'cmpgtui') {
@@ -600,29 +634,32 @@ function parseOutReg(register) {
         console.error('Register conversion in parseOutReg function failed, register is not a number. Current PC is: ' + pc);
         return register;
     }
-    if (parsed === 10) {parsed = 'a'}
-    else if (parsed === 11) {parsed = 'b'}
-    else if (parsed === 12) {parsed = 'c'}
-    else if (parsed === 13) {parsed = 'd'}
-    else if (parsed === 14) {parsed = 'e'}
-    else if (parsed === 15) {parsed = 'f'}
-    else if (parsed === 16) {parsed = '10'}
-    else if (parsed === 17) {parsed = '11'}
-    else if (parsed === 18) {parsed = '12'}
-    else if (parsed === 19) {parsed = '13'}
-    else if (parsed === 20) {parsed = '14'}
-    else if (parsed === 21) {parsed = '15'}
-    else if (parsed === 22) {parsed = '16'}
-    else if (parsed === 23) {parsed = '17'}
-    else if (parsed === 24) {parsed = '18'}
-    else if (parsed === 25) {parsed = '19'}
-    else if (parsed === 26) {parsed = '1a'}
-    else if (parsed === 27) {parsed = '1b'}
-    else if (parsed === 28) {parsed = '1c'}
-    else if (parsed === 29) {parsed = '1d'}
-    else if (parsed === 30) {parsed = '1e'}
-    else if (parsed === 31) {parsed = '1f'}
-    parsed = '0x' + parsed;
 
-    return parseInt(parsed);;
+
+    // if (parsed === 10) {parsed = 'a'}
+    // else if (parsed === 11) {parsed = 'b'}
+    // else if (parsed === 12) {parsed = 'c'}
+    // else if (parsed === 13) {parsed = 'd'}
+    // else if (parsed === 14) {parsed = 'e'}
+    // else if (parsed === 15) {parsed = 'f'}
+    // else if (parsed === 16) {parsed = '10'}
+    // else if (parsed === 17) {parsed = '11'}
+    // else if (parsed === 18) {parsed = '12'}
+    // else if (parsed === 19) {parsed = '13'}
+    // else if (parsed === 20) {parsed = '14'}
+    // else if (parsed === 21) {parsed = '15'}
+    // else if (parsed === 22) {parsed = '16'}
+    // else if (parsed === 23) {parsed = '17'}
+    // else if (parsed === 24) {parsed = '18'}
+    // else if (parsed === 25) {parsed = '19'}
+    // else if (parsed === 26) {parsed = '1a'}
+    // else if (parsed === 27) {parsed = '1b'}
+    // else if (parsed === 28) {parsed = '1c'}
+    // else if (parsed === 29) {parsed = '1d'}
+    // else if (parsed === 30) {parsed = '1e'}
+    // else if (parsed === 31) {parsed = '1f'}
+    // parsed = '0x' + parsed;
+    // return parseInt(parsed);;
+
+    return parsed;
 }
