@@ -89,6 +89,7 @@ function restartButton(){
         `<tr style = " background-color : darkgray "><th>PC</th><th>0</th></tr>` +
         "<tr><th>" + "Register" + "</th><th>" + "Value" + "</th></tr>"
     )
+    memoryInit();
 }
 // for (i = 0; i < 33; i++) {
 //     for (j = 0; j < 33; j++) {
