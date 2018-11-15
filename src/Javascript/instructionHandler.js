@@ -573,7 +573,6 @@ function executeInstruction(address) {
 
 
         }
-        return;
     }
            // }
 
@@ -591,9 +590,8 @@ function executeInstruction(address) {
                         i++;
 
                         executeInstruction(startLoop);
-                        var increment2 = startLoop.slice(2, 4);
-                        increment2 = parseInt(increment2, 10);
-                        //increment += 1;
+                        increment = startLoop.slice(2, 4);
+
                         begin = 1;
                     }
 
@@ -602,7 +600,7 @@ function executeInstruction(address) {
 
                   //  console.log("increment: " + increment);
                     nextAddress = "0x";
-                    nextAddress += increment2;
+                    nextAddress += increment;
                     if (nextAddress == "0x48"){
                         begin = 0;
                     }
@@ -634,22 +632,22 @@ function executeInstruction(address) {
                            // console.log("a = " + a + " | Reg. val = " + r);
                             a = mem[i];
 
-                          //  console.log("After setting val, a = " + a);
+                            console.log("After setting val, a = " + a);
                         }
                         if (b == r) {
                            // console.log("b = " + b + " | Reg. val = " + r);
                             b = mem[i];
 
-                           // console.log("After setting val, b = " + b);
+                            console.log("After setting val, b = " + b);
                         }
                     }
 
                    // console.log("a-val: " + a + " | b-val: " + b);
                     i++;
-                    increment2 = nextAddress.slice(2, 4);
-                    increment2 = parseInt(increment2, 10);
-                      console.log("increment2: " + increment2);
-                    increment2 += 1;
+                    increment = nextAddress.slice(2, 4);
+                    increment = parseInt(increment, 10);
+                    //  console.log("increment: " + increment);
+                    increment += 1;
                 }
             }
 
