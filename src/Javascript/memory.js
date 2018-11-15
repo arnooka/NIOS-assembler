@@ -45,25 +45,28 @@
      |             End of Memory                   |       0xFFFF
      |_____________________________________________|                */
 
-
 /* Memory is represented in a 65,536 byte array. */
 const MEMORY_SIZE = 65536;
-var mem = [];
+let mem = [];
 
 /* set up function of the memory */
-function memoryInit(){
-    // Set R0 as zero
-    mem[0] = 0;
+function memoryInit() {
+    console.log('memory Init called');
+    /*Initializing all registers in memory to zero
+    * Ex. mem[1] = r1 mem[2] = r2 ... mem[25] = r25 */
+    mem = [];
+    for (let i = 0; i < 26; i++) mem[i] = 0;
 
     // Declare Special Registers
     // TODO: find what these should be initialized as
-    mem[26] = 0;            // Global Pointer
-    mem[27] = 0;            // Stack Pointer
-    mem[28] = 0;            // Frame Pointer
-    mem[29] = 0;            // Exception Return Address
-    mem[30] = 0;            // Status Register
-    mem[31] = 0x40;         // Return Address
+    mem[26] = 0;    // Global Pointer
+    mem[27] = 0;    // Stack Pointer
+    mem[28] = 0;    // Frame Pointer
+    mem[29] = 0;    // Exception Return Address
+    mem[30] = 0;    // Status Register
+    mem[31] = 0;    // Return Address
 
+    pc = 0x40;
 }
 
 /* Writes data to memory at a certain address */
@@ -78,14 +81,14 @@ function read(memAddress) {
 
 /* returns how much free space is left in bytes */
 function spaceFree() {
-    var count = 0, i;
-    for(i = 0; i < MEMORY_SIZE; i++){
-        if(mem[i] != undefined) {
-            count++;
-        }
+    let count = 0;
+    for (let i = 0; i < MEMORY_SIZE; i++) {
+        if (mem[i] !== undefined) count++;
     }
     return MEMORY_SIZE - count;
 }
+
+memoryInit();
 
 //For testing
 /*

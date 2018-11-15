@@ -11,11 +11,11 @@ const dict = new Map([['add','r'], ['addi','i'], ['and','r'], ['andhi','i'], ['a
 ['ori','i'], ['rdctl','r'], ['rdprs','i'], ['ret','r'], ['rol','r'], ['roli','i'], ['ror','r'], ['sll','r'],
 ['slli','i'], ['sra','r'], ['srai','i'], ['srl','r'], ['srli','i'], ['stb','i'], ['stbio','i'], ['sth','i'],
 ['sthio','i'], ['stw','i'],['stwio','i'], ['sub','r'], ['subi','i'], ['sync','r'], ['trap','r'], ['wrctl','r'],
-['wrprs','r'], ['xor','r'], ['xorhi','i'], ['xori','i']
+['wrprs','r'], ['xor','r'], ['xorhi','i'], ['xori','i'],['dowhile','j']
 ]);
 const labels = new Map();
 
-var asmFile = document.querySelector('input[type="file"]');
+let asmFile = null;
 
 // Object instances in main document
 const hiddenInput = document.getElementById('hidden-input');
@@ -34,28 +34,24 @@ customDz.onload = function () {
 
 customDz.ondrop = function (event) {
     event.preventDefault();
-    this.className = 'dropzone';
-    customTxt.style = 'color: #ccc';
+    customDz.className = 'dropzone';
     upload(event.dataTransfer.files);
 };
 
 customDz.ondragover = function () {
-    this.className = 'dropzone dragover';
-    //customTxt.style = 'color: crimson';
+    customDz.className = 'dropzone dragover';
     return false;
 };
 
 customDz.ondragleave = function () {
-    this.className = 'dropzone';
-    customTxt.style = 'color: #ccc';
+    customDz.className = 'dropzone';
     return false;
 };
 
 // File upload functions
-var upload = function (files) {
+const upload = function (files) {
     if (files.length > 1){
         alert('Please upload one file at a time');
-        console.log('Too many files uploaded at once');
         return;
     } else {
         asmFile = files[0];
@@ -73,6 +69,3 @@ hiddenInput.addEventListener('change', function() {
     asmFile = files[0];
     verifyFile();
 });
-
-
-
