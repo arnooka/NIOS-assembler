@@ -51,6 +51,7 @@ let mem = [];
 
 /* set up function of the memory */
 function memoryInit() {
+    console.log('memory Init called');
     /*Initializing all registers in memory to zero
     * Ex. mem[1] = r1 mem[2] = r2 ... mem[25] = r25 */
     mem = [];

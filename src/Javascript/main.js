@@ -6,7 +6,11 @@ const MEM_OFFSET = 0x40;
 function main() {
     let tempVal = executeInstruction(pc);
     if (isNaN(tempVal)) {
-        if (tempVal === 'break') return;
+        if (tempVal === 'break' || tempVal === 'finished') {
+            updateMemoryTable();
+            updateRegisterTable();
+            return;
+        }
         else {
             alert('Error at 0x' + pc.toString(16) + ': ' + tempVal);
             return;

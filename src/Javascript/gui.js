@@ -12,7 +12,7 @@ const pauseButton = document.getElementById('pauseBtn');
 const resetButton = document.getElementById('restartBtn');
 
 runButton.addEventListener('click', function() {
-    memoryInit();
+    // memoryInit();
     main();
 });
 
