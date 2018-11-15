@@ -41,11 +41,11 @@ var regArr = [33];
 
 
 function afterFile() {
-    console.log("---TEST REGHANDLER--- " + nameArr[0]);
-    console.log("---TEST REGHANDLER--- " + nameArr[0]);
-    console.log("---TEST REGHANDLER--- " + nameArr[0]);
-    console.log("---TEST REGHANDLER--- " + nameArr[0]);
-    console.log("---TEST REGHANDLER--- " + nameArr[0]);
+    console.log("---Test REGHANDLER--- " + nameArr[0]);
+    console.log("---Test REGHANDLER--- " + nameArr[0]);
+    console.log("---Test REGHANDLER--- " + nameArr[0]);
+    console.log("---Test REGHANDLER--- " + nameArr[0]);
+    console.log("---Test REGHANDLER--- " + nameArr[0]);
 }
 
 function addRow() {
