@@ -55,7 +55,7 @@ function executeOther(Oinstruction, operands) {
 }
 
 function executeInstruction(address) {
-    console.log('address: ' + address);
+    // console.log('executing');
     let instruction = read(address);
     // console.log(labels);
     // console.log(mem);

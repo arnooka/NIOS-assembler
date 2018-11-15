@@ -3,24 +3,48 @@ let pc = 0x40;
 const MEM_OFFSET = 0x40;
 // IMPORTANT GLOBALS
 
+
+let checkPause = 0;
+let runState = 'run';
 function main() {
-    let tempVal = executeInstruction(pc);
-    if (isNaN(tempVal)) {
-        if (tempVal === 'break' || tempVal === 'finished') {
-            updateMemoryTable();
-            updateRegisterTable();
-            return;
+    if (runState === 'pause') {
+        return;
+    } else if (runState === 'run') {
+        let tempVal = executeInstruction(pc);
+        if (isNaN(tempVal)) {
+            if (tempVal === 'break' || tempVal === 'finished') {
+                updateMemoryTable();
+                updateRegisterTable();
+                return;
+            }
+            else {
+                alert('Error at 0x' + pc.toString(16) + ': ' + tempVal);
+                return;
+            }
+        } else {
+            if (tempVal === 1) pc++;
+            else pc = tempVal;
         }
-        else {
-            alert('Error at 0x' + pc.toString(16) + ': ' + tempVal);
-            return;
+        checkPause++;
+        if (checkPause >= 100) {
+            setTimeout(() => {
+                checkPause = 0;
+                main();
+            }, 500);
+        } else {
+            main()
         }
-    } else {
-        if (tempVal === 1) pc++;
-        else pc = tempVal;
     }
-    main();
 }
+
+function pauseExecution() {
+    runState = 'pause';
+    setTimeout(() => {
+        updateRegisterTable();
+        updateMemoryTable();
+    },700)
+}
+
 
 function instructionHandler() {
 }
