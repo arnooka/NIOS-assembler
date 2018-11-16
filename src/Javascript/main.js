@@ -32,7 +32,7 @@ function main() {
                 main();
             }, 500);
         } else {
-            main()
+            main();
         }
     }
 }
@@ -42,7 +42,7 @@ function pauseExecution() {
     setTimeout(() => {
         updateRegisterTable();
         updateMemoryTable();
-    },700)
+    },700);
 }
 
 
