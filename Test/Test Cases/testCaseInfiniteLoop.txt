@@ -11,4 +11,3 @@ begin:
 	br begin
     .data
 	.end
-I
