@@ -64,7 +64,7 @@ function executeInstruction(address) {
 
     if(instruction[1]) {
         a = instruction[1];
-        if (a.indexOf('r') == 0) {
+        if (a.indexOf('r') === 0) {
             unsignedA = (read(parseOutReg(a)) << 1) >> 1;
         }
     }
@@ -74,7 +74,7 @@ function executeInstruction(address) {
     let currentInstruction = instruction[0];
     if(instruction[2]) {
         b = instruction[2];
-        if (b.indexOf('r') == 0) {
+        if (b.indexOf('r') === 0) {
             unsignedB = (read(parseOutReg(b)) << 1) >> 1;
         }
     }
@@ -153,7 +153,7 @@ function executeInstruction(address) {
     } else if (currentInstruction === 'custom') {
         return 1;
     } else if (currentInstruction === 'div') {
-        if (read(parseOutReg(c)) == 0) {
+        if (read(parseOutReg(c)) === 0) {
             return 'Divide by 0 error'
         }
         write(parseOutReg(a), read(parseOutReg(b)) / read(parseOutReg(c)));
@@ -493,7 +493,7 @@ function parseOutReg(register) {
             return parsed;
         }
         if (isNaN(parsed)) {
-            console.error('Register conversion in parseOutReg function failed, register is not a number. Current PC is: ' + pc);
+            console.error('Register conversion in parseOutReg function failed, register is not a number! Current PC is: ' + pc);
             return register;
         }
 
