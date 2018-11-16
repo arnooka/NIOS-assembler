@@ -54,11 +54,11 @@ function executeOther(Oinstruction, operands) {
     }
 }
 
+let arr = new Uint32Array(1);
 function executeInstruction(address) {
     let instruction = read(address);
     let a = null, b = null, c = null;
     let unsignedA = null, unsignedB = null, unsignedC = null;
-    let arr = new Uint32Array(1);
     let currentInstruction = instruction[0];
 
     if (instruction[1] === 'r0') {
