@@ -476,6 +476,8 @@ function executeInstruction(address) {
         return 1;
     } else {
         console.error('Instruction was not able to be identified by the instruction handler');
+        runState = 'pause';
+        return 'Invalid Instruction: ' + currentInstruction + '. Halting Execution.';
     }
 
     // write(address,);
@@ -485,7 +487,11 @@ function parseOutReg(register) {
     if (register) {
         register = register.replace('r', '');
         let parsed = parseInt(register);
-
+        if (parsed > 31) {
+            runState = 'pause';
+            alert('Invalid register : r' + parsed + '. Pausing execution');
+            return parsed;
+        }
         if (isNaN(parsed)) {
             console.error('Register conversion in parseOutReg function failed, register is not a number. Current PC is: ' + pc);
             return register;
