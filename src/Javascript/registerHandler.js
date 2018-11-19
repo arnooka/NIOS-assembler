@@ -10,7 +10,7 @@ function updateRegisterTable() {
     let clist = $("#registerValues"); // This reference speeds up the run time
     $("#registerValues").html("");
     clist.append(
-        '<tr style = " background-color : darkgray "><th>PC</th><th>${pc}</th></tr>' +
+        '<tr style = " background-color : darkgray "><th>PC</th><th>' + pc + '</th></tr>' +
         '<tr><th>Register</th><th>Value</th></tr>'
     );
     for (let i = 0; i < 32; i++) {
@@ -22,7 +22,7 @@ function updateRegisterTable() {
     }
 }
 
-function updateMemoryTable(){
+function updateMemoryTable() {
     let clist = $("#memoryValues"); // This reference speeds up the run time
     $("#memoryValues").html("");
     clist.append(
@@ -42,7 +42,7 @@ function updateMemoryTable(){
     }
 }
 
-function memoryCheck(memAddress){
+function memoryCheck(memAddress) {
     let verify = read(memAddress);
     if (verify !== undefined) {
         return verify; // TODO: format data somehow?
@@ -51,7 +51,7 @@ function memoryCheck(memAddress){
     }
 }
 
-function memoryButton(id){
+function memoryButton(id) {
     let person = prompt("Enter memory address:", "0x");
     document.getElementById(`tableRow + ${id}`).cells[0].innerHTML = person;
     document.getElementById(`tableRow + ${id}`).cells[1].innerHTML = memoryCheck(person);

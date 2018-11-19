@@ -5,6 +5,7 @@
 // Boolean logic
 let paused = true;
 let programRunning = false;
+let runPressed = false;
 let interval = null;
 const INTERVAL_LENGTH = 5;
 
@@ -21,40 +22,44 @@ runButton.addEventListener('click', function() {
     if (paused && interval === null) {
         paused = false;
         programRunning = true;
+        runPressed = true;
         pauseButton.innerHTML = 'Pause';
         runButton.innerHTML = 'Running';
         runProgram();
-    } else {
-        alert('Please press restart to begin the program again');
     }
 });
 
 pauseButton.addEventListener('click', function() {
-    paused = !paused;
-    programRunning = !paused;
+    if (!paused) {
+        paused = true;
+        programRunning = false;
+    } else return;
     if (paused) {
-        clearInterval(interval);
-        pauseButton.innerHTML = 'Continue';
+        if (interval !== null) {
+            clearInterval(interval);
+            interval = null;
+        }
+        pauseButton.innerHTML = 'Paused';
+        runButton.innerHTML = 'Resume';
         updateMemoryTable();
         updateRegisterTable();
         alert('Program paused');
-    } else {
-        pauseButton.innerHTML = 'Pause';
-        runButton.innerHTML = 'Running';
-        runProgram();
     }
 });
 
 resetButton.addEventListener('click', function() {
     paused = false;
     programRunning = true;
-    pauseButton.innerHTML = 'Pause';
     runButton.innerHTML = 'Running';
+    pauseButton.innerHTML = 'Pause';
     resetGui();
     if (interval === null) {
         runProgram();
     } else {
-        clearInterval(interval);
+        if (interval !== null) {
+            clearInterval(interval);
+            interval = null;
+        }
         runProgram();
     }
 });
@@ -63,14 +68,16 @@ resetButton.addEventListener('click', function() {
 function runProgram() {
     interval = setInterval(function () {
         let string = main();
-        if (string === 'end program'){
+        if (string === 'end program') {
             clearInterval(interval);
+            interval = null;
             runButton.innerHTML = 'Run';
-            updateMemoryTable();
-            updateRegisterTable();
+            pc = 0x40;
             alert('Program Execution Complete');
         }
-    },INTERVAL_LENGTH);
+        updateMemoryTable();
+        updateRegisterTable();
+    }, INTERVAL_LENGTH);
 }
 
 function resetGui() {

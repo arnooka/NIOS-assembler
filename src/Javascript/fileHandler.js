@@ -50,7 +50,7 @@ customDz.ondragleave = function () {
 
 // File upload functions
 const upload = function (files) {
-    if (files.length > 1){
+    if (files.length > 1) {
         alert('Please upload one file at a time');
         return;
     } else {

@@ -54,9 +54,14 @@ function executeOther(Oinstruction, operands) {
     }
 }
 
-let arr = new Uint32Array(1);
+let arr32 = new Uint32Array(1);
+let arr16 = new Uint16Array(1);
+let arr8 = new Uint8Array(1);
 function executeInstruction(address) {
     let instruction = read(address);
+    if (instruction === undefined) {
+        alert('Undefined memory at address ')
+    }
     let a = null, b = null, c = null;
     let unsignedA = null, unsignedB = null, unsignedC = null;
     let currentInstruction = instruction[0];
@@ -65,34 +70,34 @@ function executeInstruction(address) {
         return 'Cannot write to r0';
     }
 
-    if(instruction[1]) {
+    if (instruction[1]) {
         a = instruction[1];
         if (a.indexOf('r') === 0) {
-            arr[0] = read(parseOutReg(a));
-            unsignedA = arr[0];
-        } else if (!isNaN(a)){
-            arr[0] = parseInt(a);
-            unsignedA = arr[0];
+            arr32[0] = read(parseOutReg(a));
+            unsignedA = arr32[0];
+        } else if (!isNaN(a)) {
+            arr32[0] = parseInt(a);
+            unsignedA = arr32[0];
         }
     }
-    if(instruction[2]) {
+    if (instruction[2]) {
         b = instruction[2];
         if (b.indexOf('r') === 0) {
-            arr[0] = read(parseOutReg(b));
-            unsignedB = arr[0];
-        } else if (!isNaN(b)){
-            arr[0] = parseInt(b);
-            unsignedB = arr[0];
+            arr32[0] = read(parseOutReg(b));
+            unsignedB = arr32[0];
+        } else if (!isNaN(b)) {
+            arr32[0] = parseInt(b);
+            unsignedB = arr32[0];
         }
     }
     if (instruction[3]) {
         c = instruction[3];
-        if(c.indexOf('r') === 0) {
-            arr[0] = read(parseOutReg(c));
-            unsignedC = arr[0];
-        } else if (!isNaN(c)){
-            arr[0] = parseInt(c);
-            unsignedC = arr[0];
+        if (c.indexOf('r') === 0) {
+            arr32[0] = read(parseOutReg(c));
+            unsignedC = arr32[0];
+        } else if (!isNaN(c)) {
+            arr32[0] = parseInt(c);
+            unsignedC = arr32[0];
         }
     }
 
@@ -316,13 +321,13 @@ function executeInstruction(address) {
             return 1;
         }
     } else if (currentInstruction === 'bne') {
-        if(read(parseOutReg(a)) !== read(parseOutReg(b))) {
+        if (read(parseOutReg(a)) !== read(parseOutReg(b))) {
             return labels.get(c);
         } else {
             return 1;
         }
     } else if (currentInstruction === 'br') {
-        if(isNaN(parseInt(a))) {
+        if (isNaN(parseInt(a))) {
             if (address === parseInt(labels.get(a))) {
                 return 'finished';
             }
@@ -333,7 +338,7 @@ function executeInstruction(address) {
         }
         return parseInt(a);
     } else if (currentInstruction === 'cmpeqi') {
-        if(read(parseOutReg(b) === parseInt(c))) {
+        if (read(parseOutReg(b) === parseInt(c))) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
