@@ -3,27 +3,31 @@
  and any related the to GUI */
 
 // Boolean logic
-let paused = true;
-let programRunning = false;
-let runPressed = false;
+let paused = true, programRunning = false, runPressed = false;
+let debug = false, finished = false;
 let interval = null;
 const INTERVAL_LENGTH = 5;
 
 const runButton = document.getElementById('runBtn');
 const pauseButton = document.getElementById('pauseBtn');
 const resetButton = document.getElementById('restartBtn');
+const debugButton = document.getElementById('debugBtn');
 
 // Button event listeners
 runButton.addEventListener('click', function() {
     if (!fileUploaded) {
         alert('Please upload a file to begin execution');
         return;
+    } else if (finished) {
+        alert('Please press \'Restart\' to reset the program');
+        return;
     }
-    if (paused && interval === null) {
+    if (debug) {
+        runProgram();
+    } else if (paused && interval === null) {
         paused = false;
         programRunning = true;
         runPressed = true;
-        pauseButton.innerHTML = 'Pause';
         runButton.innerHTML = 'Running';
         runProgram();
     }
@@ -39,19 +43,20 @@ pauseButton.addEventListener('click', function() {
             clearInterval(interval);
             interval = null;
         }
-        pauseButton.innerHTML = 'Paused';
         runButton.innerHTML = 'Resume';
-        updateMemoryTable();
-        updateRegisterTable();
         alert('Program paused');
     }
 });
 
 resetButton.addEventListener('click', function() {
+    // TODO: Rethink how reset works
+    if (debug) {
+        resetGui();
+        return;
+    }
     paused = false;
     programRunning = true;
     runButton.innerHTML = 'Running';
-    pauseButton.innerHTML = 'Pause';
     resetGui();
     if (interval === null) {
         runProgram();
@@ -64,30 +69,46 @@ resetButton.addEventListener('click', function() {
     }
 });
 
+debugButton.addEventListener('click', function () {
+    if (interval === null && paused) {
+        debug = !debug;
+        if (debug) {
+            runButton.innerHTML = 'Step';
+        } else {
+            runButton.innerHTML = 'Run';
+        }
+    }
+});
+
 // Main gui functions
 function runProgram() {
-    interval = setInterval(function () {
-        let string = main();
-        if (string === 'end program') {
-            clearInterval(interval);
-            interval = null;
-            runButton.innerHTML = 'Run';
-            pc = 0x40;
-            alert('Program Execution Complete');
-        }
-        updateMemoryTable();
-        updateRegisterTable();
-    }, INTERVAL_LENGTH);
+    if (debug) {
+        let condition = main();
+        checkCondition(condition);
+    } else {
+        interval = setInterval(function () {
+            let condition = main();
+            checkCondition(condition);
+        }, INTERVAL_LENGTH);
+    }
+}
+
+function checkCondition(condition) {
+    if (condition === 'end program') {
+        finished = true;
+        if (debug) runButton.innerHTML = 'Step';
+        else runButton.innerHTML = 'Run';
+        alert('Program Execution Complete');
+    }
+    updateMemoryTable();
+    updateRegisterTable();
 }
 
 function resetGui() {
-    let clist = $("#registerValues"); // This reference speeds up the run time
-    $("#registerValues").html("");
-    clist.append(
-        `<tr style = " background-color : darkgray "><th>PC</th><th>0</th></tr>` +
-        "<tr><th>" + "Register" + "</th><th>" + "Value" + "</th></tr>"
-    );
+    finished = false;
     memoryInit();
+    updateRegisterTable();
+    updateMemoryTable();
     if (newUpload) {
         labels.clear();
     }

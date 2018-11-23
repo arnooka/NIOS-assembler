@@ -33,6 +33,7 @@ customDz.onload = function () {
 };
 
 customDz.ondrop = function (event) {
+    if (customTxt.innerHTML.indexOf('does not support') !== -1) return;
     event.preventDefault();
     customDz.className = 'dropzone';
     upload(event.dataTransfer.files);
@@ -61,6 +62,7 @@ const upload = function (files) {
 
 // Event listeners
 customDz.addEventListener('click', function() {
+    if (customTxt.innerHTML.indexOf('does not support') !== -1) return;
     hiddenInput.click();
 });
 

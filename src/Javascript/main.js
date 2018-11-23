@@ -3,9 +3,7 @@ let pc = 0x40;
 const MEM_OFFSET = 0x40;
 // IMPORTANT GLOBALS
 
-let newUpload = false;
-let blockComment = false;
-let fileUploaded = false;
+let newUpload = false, blockComment = false, fileUploaded = false;
 
 function main() {
     let tempVal = executeInstruction(pc);
@@ -19,6 +17,7 @@ function main() {
         paused = true;
         programRunning = false;
         clearInterval(interval);
+        interval = null;
         return tempVal;
     } else {
         if (tempVal === 1) pc++;
@@ -28,6 +27,7 @@ function main() {
 
 function verifyFile() {
     // Verify correct file type
+    if (asmFile === undefined) return;
     console.clear();
     console.log("Verifying File '" + asmFile.name + "'");
     let extension = asmFile.name.toLowerCase().substr((asmFile.name.lastIndexOf('.') + 1));
@@ -42,15 +42,12 @@ function verifyFile() {
     reader.readAsText(asmFile);
     let fullFile = "";
     reader.onload = function () {
-        newUpload = true;
-        // Don't upload new file if program is currently running
-        if (programRunning){
-            newUpload = false;
+        if (reader.result === null) return;
+        else if (programRunning) {
             alert('Please pause the program to upload a new file');
             return;
         }
-        runButton.innerHTML = 'Run';
-        pauseButton.innerHTML = 'Pause';
+
         resetGui();
         fullFile += reader.result.replace(/,/g, ';').split('\n');
         const lines = fullFile.split(',');
@@ -116,7 +113,8 @@ function verifyFile() {
             } else if (instruction[0].indexOf('#') === 0) {
                 memoryAddress--;
             } else {
-                alert('(Line ' + fileLine + '): \'' + instruction[0] + '\' is not a proper instruction');
+                alert('Line ' + fileLine + ': \'' + instruction[0] + '\' is not a proper instruction');
+                fileUploaded = false;
                 return;
             }
             memoryAddress++;
