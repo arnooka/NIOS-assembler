@@ -36,21 +36,21 @@ http.createServer(function (req, res) {
     let ext = path.parse(pathname).ext;
 
     fs.exists(pathname, function (exist) {
-        if(!exist) {
+        if (!exist) {
             // if the file is not found, return 404
             res.statusCode = 404;
             res.end(`File ${pathname} not found!`);
             return;
         }
         // if is a directory search for index file matching the extention
-        if (fs.statSync(pathname).isDirectory()){
+        if (fs.statSync(pathname).isDirectory()) {
             if (ext === '') ext = '.html';
             pathname += '/HTML/gui' + ext;
         }
 
         // read file from file system
-        fs.readFile(pathname, function(err, data){
-            if(err){
+        fs.readFile(pathname, function(err, data) {
+            if (err) {
                 res.statusCode = 500;
                 res.end(`Error getting the file: ${err}.`);
             } else {
