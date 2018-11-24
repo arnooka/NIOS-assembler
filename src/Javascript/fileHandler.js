@@ -13,7 +13,7 @@ const dict = new Map([['add','r'], ['addi','i'], ['and','r'], ['andhi','i'], ['a
 ['sthio','i'], ['stw','i'],['stwio','i'], ['sub','r'], ['subi','i'], ['sync','r'], ['trap','r'], ['wrctl','r'],
 ['wrprs','r'], ['xor','r'], ['xorhi','i'], ['xori','i'],['dowhile','j']
 ]);
-const labels = new Map();
+let labels = new Map();
 
 let asmFile = null;
 

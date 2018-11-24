@@ -35,7 +35,6 @@ function verifyFile() {
         alert('Please upload a ".txt" or ".asm" file');
         return;
     }
-    customTxt.innerHTML = asmFile.name;
 
     // Begin reading file
     const reader = new FileReader();
@@ -47,25 +46,30 @@ function verifyFile() {
             alert('Please pause the program to upload a new file');
             return;
         }
-
+        let tempMem = mem;
+        let tempLabels = labels;
         resetGui();
         fullFile += reader.result.replace(/,/g, ';').split('\n');
         const lines = fullFile.split(',');
 
         let memoryAddress = MEM_OFFSET, fileLine = 1;
-        let dataArea = false;
+        let dataArea = false, finishedVerify = false;
         for (let i = 0; i < lines.length; i++) {
             // Parse instruction and generate memory address for instruction
             let instruction = parseInstruction(lines[i]);
             if (instruction.indexOf('Unknown Register') > -1) {
                 alert('Line ' + fileLine + ': ' + instruction);
-                break;
+                mem = tempMem;
+                labels = tempLabels;
+                return;
             }
             if (instruction.length > 0) console.log(instruction);
 
             // Check if space is available in memory
             if (memoryAddress > (MEMORY_SIZE - MEM_OFFSET)) {
                 alert('Total instruction count exceeds memory limit: ' + MEMORY_SIZE + ' blocks');
+                mem = tempMem;
+                labels = tempLabels;
                 return;
             }
 
@@ -100,6 +104,7 @@ function verifyFile() {
                 }
             } else if (!dict.has(instruction[0]) && dataArea) {
                 if (instruction[0] === '.end') {
+                    finishedVerify = true;
                     break;
                 }
                 write(memoryAddress, instruction);
@@ -114,13 +119,19 @@ function verifyFile() {
                 memoryAddress--;
             } else {
                 alert('Line ' + fileLine + ': \'' + instruction[0] + '\' is not a proper instruction');
-                fileUploaded = false;
+                mem = tempMem;
+                labels = tempLabels;
                 return;
             }
             memoryAddress++;
             fileLine++;
+            if (i+1 === lines.length) finishedVerify = true;
         }
-        fileUploaded = true;
+        if (finishedVerify) {
+            customTxt.innerHTML = asmFile.name;
+            fileUploaded = true;
+        }
+        if (!debug) runButton.innerHTML = 'Run';
         newUpload = false;
         console.log(labels);
         console.log(mem);
@@ -145,7 +156,6 @@ function parseInstruction(line) {
         if (tempArr[j] === '*/') {
             blockComment = false;
         }
-
         if (!blockComment) {
             // Check if user accesses register by its other name
             tempArr[j] = registerCheck(tempArr[j]);
