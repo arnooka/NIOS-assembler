@@ -5,9 +5,7 @@ const MEM_OFFSET = 0x40;
 
 import {Seven, Digit} from 'seven-segment';
 
-let newUpload = false;
-let blockComment = false;
-let fileUploaded = false;
+let newUpload = false, blockComment = false, fileUploaded = false;
 
 function main() {
     let tempVal = executeInstruction(pc);
@@ -21,6 +19,7 @@ function main() {
         paused = true;
         programRunning = false;
         clearInterval(interval);
+        interval = null;
         return tempVal;
     } else {
         if (tempVal === 1) pc++;
@@ -30,6 +29,7 @@ function main() {
 
 function verifyFile() {
     // Verify correct file type
+    if (asmFile === undefined) return;
     console.clear();
     console.log("Verifying File '" + asmFile.name + "'");
     let extension = asmFile.name.toLowerCase().substr((asmFile.name.lastIndexOf('.') + 1));
@@ -37,40 +37,41 @@ function verifyFile() {
         alert('Please upload a ".txt" or ".asm" file');
         return;
     }
-    customTxt.innerHTML = asmFile.name;
 
     // Begin reading file
     const reader = new FileReader();
     reader.readAsText(asmFile);
     let fullFile = "";
     reader.onload = function () {
-        newUpload = true;
-        // Don't upload new file if program is currently running
-        if (programRunning){
-            newUpload = false;
+        if (reader.result === null) return;
+        else if (programRunning) {
             alert('Please pause the program to upload a new file');
             return;
         }
-        runButton.innerHTML = 'Run';
-        pauseButton.innerHTML = 'Pause';
+        let tempMem = mem;
+        let tempLabels = labels;
         resetGui();
         fullFile += reader.result.replace(/,/g, ';').split('\n');
         const lines = fullFile.split(',');
 
         let memoryAddress = MEM_OFFSET, fileLine = 1;
-        let dataArea = false;
+        let dataArea = false, finishedVerify = false;
         for (let i = 0; i < lines.length; i++) {
             // Parse instruction and generate memory address for instruction
             let instruction = parseInstruction(lines[i]);
             if (instruction.indexOf('Unknown Register') > -1) {
                 alert('Line ' + fileLine + ': ' + instruction);
-                break;
+                mem = tempMem;
+                labels = tempLabels;
+                return;
             }
             if (instruction.length > 0) console.log(instruction);
 
             // Check if space is available in memory
             if (memoryAddress > (MEMORY_SIZE - MEM_OFFSET)) {
                 alert('Total instruction count exceeds memory limit: ' + MEMORY_SIZE + ' blocks');
+                mem = tempMem;
+                labels = tempLabels;
                 return;
             }
 
@@ -105,6 +106,7 @@ function verifyFile() {
                 }
             } else if (!dict.has(instruction[0]) && dataArea) {
                 if (instruction[0] === '.end') {
+                    finishedVerify = true;
                     break;
                 }
                 write(memoryAddress, instruction);
@@ -118,13 +120,20 @@ function verifyFile() {
             } else if (instruction[0].indexOf('#') === 0) {
                 memoryAddress--;
             } else {
-                alert('(Line ' + fileLine + '): \'' + instruction[0] + '\' is not a proper instruction');
+                alert('Line ' + fileLine + ': \'' + instruction[0] + '\' is not a proper instruction');
+                mem = tempMem;
+                labels = tempLabels;
                 return;
             }
             memoryAddress++;
             fileLine++;
+            if (i+1 === lines.length) finishedVerify = true;
         }
-        fileUploaded = true;
+        if (finishedVerify) {
+            customTxt.innerHTML = asmFile.name;
+            fileUploaded = true;
+        }
+        if (!debug) runButton.innerHTML = 'Run';
         newUpload = false;
         console.log(labels);
         console.log(mem);
@@ -149,7 +158,6 @@ function parseInstruction(line) {
         if (tempArr[j] === '*/') {
             blockComment = false;
         }
-
         if (!blockComment) {
             // Check if user accesses register by its other name
             tempArr[j] = registerCheck(tempArr[j]);
