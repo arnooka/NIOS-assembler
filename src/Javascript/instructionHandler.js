@@ -41,26 +41,13 @@ Instructions:
 call, jmpi,
  */
 
-/* Might be used to deal with instructions that don't fit the types or for pseudo-Instructions
-Instructions:
-nop,
-*/
-function executeOther(Oinstruction, operands) {
-    if (!Oinstruction) {
-        console.log('No instruction passed to execute other');
-        return;
-    } if (Oinstruction === 'nop') {
-        // do nothing?
-    }
-}
-
 let arr32 = new Uint32Array(1);
 let arr16 = new Uint16Array(1);
 let arr8 = new Uint8Array(1);
 function executeInstruction(address) {
     let instruction = read(address);
     if (instruction === undefined) {
-        alert('Undefined memory at address ')
+        return 'Undefined instruction or memory';
     }
     let a = null, b = null, c = null;
     let unsignedA = null, unsignedB = null, unsignedC = null;
@@ -220,6 +207,7 @@ function executeInstruction(address) {
         // return to address at r31
         return read(31);
     } else if (currentInstruction === 'rol') {
+
 
     } else if (currentInstruction === 'roli') {
 

@@ -3,6 +3,8 @@ let pc = 0x40;
 const MEM_OFFSET = 0x40;
 // IMPORTANT GLOBALS
 
+import {Seven, Digit} from 'seven-segment';
+
 let newUpload = false;
 let blockComment = false;
 let fileUploaded = false;
