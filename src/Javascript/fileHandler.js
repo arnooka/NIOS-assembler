@@ -13,7 +13,7 @@ const dict = new Map([['add','r'], ['addi','i'], ['and','r'], ['andhi','i'], ['a
 ['sthio','i'], ['stw','i'],['stwio','i'], ['sub','r'], ['subi','i'], ['sync','r'], ['trap','r'], ['wrctl','r'],
 ['wrprs','r'], ['xor','r'], ['xorhi','i'], ['xori','i'],['dowhile','j']
 ]);
-const labels = new Map();
+let labels = new Map();
 
 let asmFile = null;
 
@@ -33,6 +33,7 @@ customDz.onload = function () {
 };
 
 customDz.ondrop = function (event) {
+    if (customTxt.innerHTML.indexOf('does not support') !== -1) return;
     event.preventDefault();
     customDz.className = 'dropzone';
     upload(event.dataTransfer.files);
@@ -50,7 +51,7 @@ customDz.ondragleave = function () {
 
 // File upload functions
 const upload = function (files) {
-    if (files.length > 1){
+    if (files.length > 1) {
         alert('Please upload one file at a time');
         return;
     } else {
@@ -61,6 +62,7 @@ const upload = function (files) {
 
 // Event listeners
 customDz.addEventListener('click', function() {
+    if (customTxt.innerHTML.indexOf('does not support') !== -1) return;
     hiddenInput.click();
 });
 

@@ -54,431 +54,478 @@ function executeOther(Oinstruction, operands) {
     }
 }
 
+let arr32 = new Uint32Array(1);
+let arr16 = new Uint16Array(1);
+let arr8 = new Uint8Array(1);
 function executeInstruction(address) {
-    console.log('address: ' + address);
-    let instruction = read(address);
-    // console.log(labels);
-    // console.log(mem);
-    let a = null, b = null, c = null;
-    let unsignedA = null, unsignedB = null, unsignedC = null;
-
-    if(instruction[1]) {
-        a = instruction[1];
-        if (a.indexOf('r') == 0) {
-            unsignedA = (read(parseOutReg(a)) << 1) >> 1;
-        }
+    let data = read(address);
+    if (data === undefined) {
+        return 'Undefined memory';
     }
-    if (instruction[1] === 'r0') {
+    let a = null, b = null, c = null;
+    let unsignedA32 = null, unsignedB32 = null, unsignedC32 = null;
+    let unsignedA16 = null, unsignedB16 = null, unsignedC16 = null;
+    let unsignedA8 = null, unsignedB8 = null, unsignedC8 = null;
+    let instruction = data[0];
+
+    if (data[1] === 'r0') {
         return 'Cannot write to r0';
     }
-    let currentInstruction = instruction[0];
-    if(instruction[2]) {
-        b = instruction[2];
-        if (b.indexOf('r') == 0) {
-            unsignedB = (read(parseOutReg(b)) << 1) >> 1;
+
+    if (data[1]) {
+        a = data[1];
+        if (a.indexOf('r') === 0) {
+            arr32[0] = read(parseOutReg(a));
+            arr16[0] = read(parseOutReg(a));
+            arr8[0]  = read(parseOutReg(a));
+        } else if (!isNaN(a)) {
+            arr32[0] = parseInt(a);
+            arr16[0] = parseInt(a);
+            arr8[0]  = parseInt(a);
         }
+        unsignedA32 = arr32[0];
+        unsignedA16 = arr16[0];
+        unsignedA8  = arr8[0];
     }
-    if (instruction[3]) {
-        c = instruction[3];
-        if(c.indexOf('r') === 0) {
-            unsignedC = (read(parseOutReg(c)) << 1) >> 1;
+    if (data[2]) {
+        b = data[2];
+        if (b.indexOf('r') === 0) {
+            arr32[0] = read(parseOutReg(b));
+            unsignedB32 = arr32[0];
+            unsignedB16 = arr16[0];
+            unsignedB8  = arr8[0];
+        } else if (!isNaN(b)) {
+            arr32[0] = parseInt(b);
+            arr16[0] = parseInt(b);
+            arr8[0]  = parseInt(b);
         }
+        unsignedB32 = arr32[0];
+        unsignedB16 = arr16[0];
+        unsignedB8  = arr8[0];
+    }
+    if (data[3]) {
+        c = data[3];
+        if (c.indexOf('r') === 0) {
+            arr32[0] = read(parseOutReg(c));
+            arr16[0] = read(parseOutReg(c));
+            arr8[0]  = read(parseOutReg(c));
+        } else if (!isNaN(c)) {
+            arr32[0] = parseInt(c);
+            arr16[0] = parseInt(c);
+            arr8[0]  = parseInt(c);
+        }
+        unsignedC32 = arr32[0];
+        unsignedC16 = arr16[0];
+        unsignedC8  = arr8[0];
     }
 
-    if (!currentInstruction) {
-        console.error('Failure to retrieve instruction from address in InstructionHandler');
+    if (!instruction) {
+        return 'Failure to retrieve instruction from address in InstructionHandler';
     }
 
     //R types ---------------------------------------------------------------------------
-    if (currentInstruction === 'add') {
-        // mem[parseOutReg(a)] = mem[parseOutReg(b)] + mem[parseOutReg(c)];
+    if (instruction === 'add') {
         let result = read(parseOutReg(b)) + read(parseOutReg(c));
         write(parseOutReg(a), result);
         return 1;
-    } else if (currentInstruction === 'and') {
+    } else if (instruction === 'and') {
         let result = read(parseOutReg(b)) & read(parseOutReg(c));
         write(parseOutReg(a), result);
         return 1;
-    } else if (currentInstruction === 'break') {
+    } else if (instruction === 'break') {
         return 'break';
-    } else if (currentInstruction === 'bret') {
+    } else if (instruction === 'bret') {
         //breakpoint return, so resume execution?
         return 1;
-    } else if (currentInstruction === 'callr') {
-        mem['0x1f'] = address + 1;
+    } else if (instruction === 'callr') {
+        write(31, address + 1);
         return read(parseOutReg(a));
-    } else if (currentInstruction === 'cmpeq') {
+    } else if (instruction === 'cmpeq') {
         if (read(parseOutReg(b)) === read(parseOutReg(c))) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmpgei') {
-        if (read(parseOutReg(b)) >= read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'cmpgeu') {
-        if (unsignedB >= unsignedC) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'cmplt') {
-        if (read(parseOutReg(b)) <= read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'cmpltu') {
-
-        if (unsignedB <= unsignedC) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'cmpne') {
-        if (read(parseOutReg(b)) != read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'custom') {
-        return 1;
-    } else if (currentInstruction === 'div') {
-        if (read(parseOutReg(c)) == 0) {
-            return 'Divide by 0 error'
-        }
-        write(parseOutReg(a), read(parseOutReg(b)) / read(parseOutReg(c)));
-        return 1;
-    } else if (currentInstruction === 'divu') {
-        if (unsignedC === 0) {
-            return 'Divide by 0 error'
-        }
-        write(parseOutReg(a), unsignedB / unsignedC);
-        return 1;
-    } else if (currentInstruction === 'jmp') {
-        return read(parseOutReg(a));
-    } else if (currentInstruction === 'mov') {
-        write(parseOutReg(a), parseOutReg(b))
-    } else if (currentInstruction === 'mul') {
-        let result = read(parseOutReg(b)) * read(parseOutReg(c));
-        write(parseOutReg(a), result);
-        return 1;
-    } else if (currentInstruction === 'mulxss') {
-        let result = read(parseOutReg(b)) * read(parseOutReg(c));
-        write(parseOutReg(a), result);
-        return 1;
-    } else if (currentInstruction === 'mulxsu') {
-        let result = read(parseOutReg(b)) * read(parseOutReg(c));
-        write(parseOutReg(a), result);
-        return 1;
-    } else if (currentInstruction === 'mulxuu') {
-        let result = unsignedB * unsignedC;
-        write(parseOutReg(a), result);
-        return 1;
-    } else if (currentInstruction === 'nextpc') {
-        // puts the address of the next instruction in the register;
-         write(parseOutReg(a), address+1);
-    } else if (currentInstruction === 'nor') {
-        let result = read(parseOutReg(b)) | read(parseOutReg(c));
-        result = ~result;
-        write(parseOutReg(a), result);
-        return 1;
-    } else if (currentInstruction === 'or') {
-        let result = read(parseOutReg(b)) | read(parseOutReg(c));
-        write(parseOutReg(a), result);
-        return 1;
-    } else if (currentInstruction === 'ret') {
-        // return to address at r31
-        return read(31);
-    } else if (currentInstruction === 'rol') {
-
-    } else if (currentInstruction === 'roli') {
-
-    } else if (currentInstruction === 'ror') {
-
-    } else if (currentInstruction === 'sll') {
-        let result = read(parseOutReg(b)) << read(parseOutReg(c));
-        write(parseOutReg(a), result);
-        return 1;
-    } else if (currentInstruction === 'slli') {
-        let result = read(parseOutReg(b)) << parseInt(c);
-        write(parseOutReg(a), result);
-        return 1;
-    } else if (currentInstruction === 'sra') {
-        write(parseOutReg(a), read(parseOutReg(b)) >>> read(parseOutReg(c)));
-        return 1;
-    } else if (currentInstruction === 'srai') {
-
-    } else if (currentInstruction === 'srl') {
-        write(parseOutReg(a), read(parseOutReg(b)) >> read(parseOutReg(c)));
-        return 1;
-    } else if (currentInstruction === 'srli') {
-
-    } else if (currentInstruction === 'sub') {
-        write(parseOutReg(a), read(parseOutReg(b)) - read(parseOutReg(c)));
-        return 1;
-    } else if (currentInstruction === 'sync') {
-        return 1;
-    } else if (currentInstruction === 'xor') {
-        write(parseOutReg(a), read(parseOutReg(b)) ^ read(parseOutReg(c)));
-        return 1;
-    }
-    // I TYPES ------------------------------------------------------------------------------------------------------------
-    else if (currentInstruction === 'addi') {
-        write(parseOutReg(a), read(parseOutReg(b)) + parseInt(c));
-        return 1;
-    } else if (currentInstruction === 'andhi') {
-
-    } else if (currentInstruction === 'andi') {
-        write(parseOutReg(a), read(parseOutReg(b)) & parseInt(c));
-    } else if (currentInstruction === 'beq') {
-        if (read(parseOutReg(a)) == read(parseOutReg(b))) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'bge') {
-        if (read(parseOutReg(a)) >= read(parseOutReg(b))) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'bgeu') {
-        if (read(parseOutReg(a)) >= read(parseOutReg(b))) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'bgt') {
-        if (read(parseOutReg(a)) > read(parseOutReg(b))) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'bgtu') {
-        if (unsignedA > unsignedB) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'ble') {
-        if (read(parseOutReg(a)) <= read(parseOutReg(b))) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'bleu') {
-        if (unsignedA <= unsignedB) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'blt') {
-        if (read(parseOutReg(a)) < read(parseOutReg(b))) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'bltu') {
-        if (unsignedA < unsignedB) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'bne') {
-        if(read(parseOutReg(a)) != read(parseOutReg(b))) {
-            return labels.get(c);
-        } else {
-            return 1;
-        }
-    } else if (currentInstruction === 'br') {
-
-        if(isNaN(parseInt(a))) {
-            if (address === parseInt(labels.get(a))) {
-                return 'finished';
-            }
-            return parseInt(labels.get(a));
-        }
-        if (address === parseInt(a)) {
-            return 'finished';
-        }
-        return parseInt(a);
-    } else if (currentInstruction === 'cmpeqi') {
-        if(read(parseOutReg(b) == parseInt(c))) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'cmpge') {
-        if (read(parseOutReg(b)) >= read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'cmpgeui') {
+    } else if (instruction === 'cmpgei') {
         if (read(parseOutReg(b)) >= parseInt(c)) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmpgt') {
-        if (read(parseOutReg(b)) > read(parseOutReg(c))) {
+    } else if (instruction === 'cmpgeu') {
+        if (unsignedB32 >= unsignedC32) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmpgti') {
-        if (read(parseOutReg(b)) > parseInt(c)) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'cmpgtu') {
-        if (unsignedB > unsignedC) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-        return 1;
-    } else if (currentInstruction === 'cmpgtui') {
-        if (unsignedB > unsignedC) {
-            write(parseOutReg(a), 1);
-        } else {
-            write(parseOutReg(a), 0);
-        }
-    } else if (currentInstruction === 'cmple') {
+    } else if (instruction === 'cmplt') {
         if (read(parseOutReg(b)) <= read(parseOutReg(c))) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmplei') {
+    } else if (instruction === 'cmpltu') {
+        if (unsignedB32 <= unsignedC32) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'cmpne') {
+        if (read(parseOutReg(b)) !== read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'custom') {
+        return 1;
+    } else if (instruction === 'div') {
+        if (read(parseOutReg(c)) === 0) {
+            write(parseOutReg(a), undefined);
+        } else {
+            let value = read(parseOutReg(b)) / read(parseOutReg(c));
+            write(parseOutReg(a), value);
+        }
+        return 1;
+    } else if (instruction === 'divu') {
+        if (unsignedC32 === 0) {
+            write(parseOutReg(a), undefined);
+        } else {
+            let value = unsignedB32 / unsignedC32;
+            write(parseOutReg(a), value);
+        }
+        return 1;
+    } else if (instruction === 'jmp') {
+        return read(parseOutReg(a));
+    } else if (instruction === 'mov') {
+        write(parseOutReg(a), parseOutReg(b));
+        return 1;
+    } else if (instruction === 'mul') {
+        let value = read(parseOutReg(b)) * read(parseOutReg(c));
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'mulxss') {
+        let value = read(parseOutReg(b)) * read(parseOutReg(c));
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'mulxsu') {
+        let value = read(parseOutReg(b)) * unsignedC32;
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'mulxuu') {
+        let value = unsignedB32 * unsignedC32;
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'nextpc') {
+        // puts the address of the next instruction in the register;
+         write(parseOutReg(a), address+1);
+         return 1;
+    } else if (instruction === 'nor') {
+        let value = ~(read(parseOutReg(b)) | read(parseOutReg(c)));
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'or') {
+        let value = read(parseOutReg(b)) | read(parseOutReg(c));
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'ret') {
+        // return to address at r31
+        return read(31);
+    } else if (instruction === 'rol') {
+
+    } else if (instruction === 'roli') {
+
+    } else if (instruction === 'ror') {
+
+    } else if (instruction === 'sll') {
+        let result = read(parseOutReg(b)) << read(parseOutReg(c));
+        write(parseOutReg(a), result);
+        return 1;
+    } else if (instruction === 'slli') {
+        let result = read(parseOutReg(b)) << parseInt(c);
+        write(parseOutReg(a), result);
+        return 1;
+    } else if (instruction === 'sra') {
+        write(parseOutReg(a), read(parseOutReg(b)) >>> unsignedC32); // TODO: Double check
+        return 1;
+    } else if (instruction === 'srai') {
+        write(parseOutReg(a), read(parseOutReg(b)) >>> unsignedC32); // TODO: Double check
+        return 1;
+    } else if (instruction === 'srl') {
+        write(parseOutReg(a), unsignedB32 >>> unsignedC32); // TODO: Double check
+        return 1;
+    } else if (instruction === 'srli') {
+        write(parseOutReg(a), unsignedB32 >>> unsignedC32); // TODO: Double check
+        return 1;
+    } else if (instruction === 'sub') {
+        let value = read(parseOutReg(b)) - read(parseOutReg(c));
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'sync') {
+        return 1;
+    } else if (instruction === 'xor') {
+        write(parseOutReg(a), read(parseOutReg(b)) ^ read(parseOutReg(c)));
+        return 1;
+    }
+    // I TYPES ------------------------------------------------------------------------------------------------------------
+    else if (instruction === 'addi') {
+        let value = read(parseOutReg(b)) + parseInt(c);
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'andhi') {
+
+    } else if (instruction === 'andi') {
+        let value = read(parseOutReg(b)) & parseInt(c);
+        write(parseOutReg(a), value);
+        return 1;
+    } else if (instruction === 'beq') {
+        if (read(parseOutReg(a)) === read(parseOutReg(b))) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'bge') {
+        if (read(parseOutReg(a)) >= read(parseOutReg(b))) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'bgeu') {
+        if (unsignedA32 >= unsignedB32) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'bgt') {
+        if (read(parseOutReg(a)) > read(parseOutReg(b))) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'bgtu') {
+        if (unsignedA32 > unsignedB32) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'ble') {
+        if (read(parseOutReg(a)) <= read(parseOutReg(b))) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'bleu') {
+        if (unsignedA32 <= unsignedB32) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'blt') {
+        if (read(parseOutReg(a)) < read(parseOutReg(b))) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'bltu') {
+        if (unsignedA32 < unsignedB32) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'bne') {
+        if (read(parseOutReg(a)) !== read(parseOutReg(b))) {
+            return labels.get(c);
+        } else {
+            return 1;
+        }
+    } else if (instruction === 'br') {
+        if (isNaN(parseInt(a))) {
+            if (address === parseInt(labels.get(a))) {
+                return 'finished';
+            }
+            return parseInt(labels.get(a));
+        } else if (address === parseInt(a)) {
+            return 'finished';
+        }
+        return parseInt(a);
+    } else if (instruction === 'cmpeqi') {
+        if (read(parseOutReg(b) === parseInt(c))) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'cmpge') {
+        if (read(parseOutReg(b)) >= read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'cmpgeui') {
+        if (unsignedB32 >= unsignedC32) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'cmpgt') {
+        if (read(parseOutReg(b)) > read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'cmpgti') {
+        if (read(parseOutReg(b)) > parseInt(c)) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'cmpgtu') {
+        if (unsignedB32 > unsignedC32) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'cmpgtui') {
+        if (unsignedB32 > unsignedC32) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+    } else if (instruction === 'cmple') {
+        if (read(parseOutReg(b)) <= read(parseOutReg(c))) {
+            write(parseOutReg(a), 1);
+        } else {
+            write(parseOutReg(a), 0);
+        }
+        return 1;
+    } else if (instruction === 'cmplei') {
         if (read(parseOutReg(b)) <= parseInt(c)) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmpleu') {
-        if (unsignedB <= unsignedC) {
+    } else if (instruction === 'cmpleu') {
+        if (unsignedB32 <= unsignedC32) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmpleui') {
-        if (unsignedB <= parseInt(unsignedC)) {
+    } else if (instruction === 'cmpleui') {
+        if (unsignedB32 <= unsignedC32) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmplti') {
+    } else if (instruction === 'cmplti') {
         if (read(parseOutReg(b)) < parseInt(c)) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmpltui') {
-        if (unsignedB < parseInt(unsignedC)) {
+    } else if (instruction === 'cmpltui') {
+        if (unsignedB32 < unsignedC32) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'cmpnei') {
-        if (unsignedB < parseInt(unsignedC)) {
+    } else if (instruction === 'cmpnei') {
+        if (unsignedB32 < unsignedC32) {
             write(parseOutReg(a), 1);
         } else {
             write(parseOutReg(a), 0);
         }
         return 1;
-    } else if (currentInstruction === 'ldb') {
+    } else if (instruction === 'ldb') {
 
-    } else if (currentInstruction === 'ldbu') {
+    } else if (instruction === 'ldbu') {
 
-    } else if (currentInstruction === 'ldh') {
+    } else if (instruction === 'ldh') {
 
-    } else if (currentInstruction === 'ldhu') {
+    } else if (instruction === 'ldhu') {
 
-    } else if (currentInstruction === 'ldw') {
+    } else if (instruction === 'ldw') {
         if (isNaN(b)) {
             c = b;
             b = 0;
         }
-        let value = read(parseOutReg(c) + parseInt(b));
-        write(parseOutReg(a), value)
+        let value =  parseInt(b) + read(parseOutReg(c));
+        write(parseOutReg(a), read(value));
         return 1;
-    } else if (currentInstruction === 'movhi') {
+    } else if (instruction === 'movhi') {
 
-    } else if (currentInstruction === 'movi' || currentInstruction === 'movia') {
+    } else if (instruction === 'movi') {
         write(parseOutReg(a), parseInt(b));
         return 1;
-    } else if (currentInstruction === 'movui') {
-        write(parseOutReg(a), parseInt(unsignedB));
+    } else if (instruction === 'movia') {
+        if (labels.has(b)) {
+            let value = parseInt(labels.get(b));
+            write(parseOutReg(a), value);
+        } else {
+            write(parseOutReg(a), parseInt(b));
+        }
         return 1;
-    } else if (currentInstruction === 'muli') {
+    } else if (instruction === 'movui') {
+        write(parseOutReg(a), unsignedB32);
+        return 1;
+    } else if (instruction === 'muli') {
         let value = read(parseOutReg(b)) * parseInt(c);
         write(parseOutReg(a), value);
         return 1;
-    } else if (currentInstruction === 'orhi') {
+    } else if (instruction === 'orhi') {
 
-    } else if (currentInstruction === 'ori') {
+    } else if (instruction === 'ori') {
         let value = read(parseOutReg(b)) | parseInt(c);
         write(parseOutReg(a), value);
         return 1;
-    } else if (currentInstruction === 'stb') {
+    } else if (instruction === 'stb') {
 
-    } else if (currentInstruction === 'sth') {
+    } else if (instruction === 'sth') {
 
-    } else if (currentInstruction === 'stw') {
+    } else if (instruction === 'stw') {
         if (isNaN(b)) {
             c = b;
             b = 0;
         }
         write(parseOutReg(c) + parseInt(b), a);
         return 1;
-    } else if (currentInstruction === 'subi') {
+    } else if (instruction === 'subi') {
         let value = read(parseOutReg(b)) - parseInt(c);
         write(parseOutReg(a), value);
         return 1;
-    } else if (currentInstruction === 'xorhi') {
+    } else if (instruction === 'xorhi') {
 
-    } else if (currentInstruction === 'xori') {
+    } else if (instruction === 'xori') {
         let value = read(parseOutReg(b)) ^ parseInt(c);
         write(parseOutReg(a), value);
         return 1;
     }
     // J Types --------------------------------------------------------------------------------------------
-    else if (currentInstruction === 'call') {
-        // Use map to return address of label in instruction, set r31 to pc + 1;
-        write(31, address+1);
+    else if (instruction === 'call') {
+        // Use map to return address of label in data, set r31 to pc + 1;
+        write(31, address + 1);
         return labels.get(a);
-    } else if (currentInstruction === 'jmpi') {
-            return labels.get(a);
-    } else if (currentInstruction === 'nop') {
+    } else if (instruction === 'jmpi') {
+        return labels.get(a);
+    } else if (instruction === 'nop') {
         return 1;
     } else {
-        console.error('Instruction was not able to be identified by the instruction handler');
+        return 'Instruction \'' + instruction + '\' was not able to be identified by the instruction handler'
     }
-
-    // write(address,);
 }
 
 function parseOutReg(register) {
@@ -490,7 +537,6 @@ function parseOutReg(register) {
             console.error('Register conversion in parseOutReg function failed, register is not a number. Current PC is: ' + pc);
             return register;
         }
-
 
         // if (parsed === 10) {parsed = 'a'}
         // else if (parsed === 11) {parsed = 'b'}
