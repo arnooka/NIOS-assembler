@@ -1,32 +1,36 @@
 // IMPORTANT GLOBALS
-let pc = 0x40;
+let pc = 0;
 const MEM_OFFSET = 0x40;
 // IMPORTANT GLOBALS
 
 let newUpload = false, blockComment = false, fileUploaded = false;
 
 function main() {
-    let tempVal = executeInstruction(pc);
-    if (isNaN(tempVal)) {
-        if (tempVal === 'break' || tempVal === 'finished') {
-            // This is an exit status from the instruction execution
-            tempVal = 'end program';
+    // Execute instruction given current PC
+    let value = executeInstruction(pc + MEM_OFFSET);
+
+    // Check for exit status else increment PC based on return value
+    if (isNaN(value)) {
+        // Check if program is exiting due to completion or error
+        if (value === 'break' || value === 'finished') {
+            value = 'end program';
         } else {
-            alert('Error at 0x' + pc.toString(16) + ': ' + tempVal);
+            alert('Error at 0x' + pc.toString(16) + ': ' + value);
         }
         paused = true;
         programRunning = false;
         clearInterval(interval);
         interval = null;
-        return tempVal;
+        return value;
     } else {
-        if (tempVal === 1) pc++;
-        else pc = tempVal;
+        // Increment or set PC based on value returned
+        if (value === 1) pc++;
+        else pc = value;
     }
 }
 
 function verifyFile() {
-    // Verify correct file type
+    // Verify correct file type by extension
     if (asmFile === undefined) return;
     console.clear();
     console.log("Verifying File '" + asmFile.name + "'");
@@ -41,13 +45,19 @@ function verifyFile() {
     reader.readAsText(asmFile);
     let fullFile = "";
     reader.onload = function () {
+        // Don't run verification if program is running or reader doesn't get a file
         if (reader.result === null) return;
         else if (programRunning) {
             alert('Please pause the program to upload a new file');
             return;
         }
+
+        // Set temp variables in the event the verification fails
         let tempMem = mem;
         let tempLabels = labels;
+
+        // Begin parsing new file by clearing GUI and tables
+        newUpload = true;
         resetGui();
         fullFile += reader.result.replace(/,/g, ';').split('\n');
         const lines = fullFile.split(',');
@@ -55,12 +65,14 @@ function verifyFile() {
         let memoryAddress = MEM_OFFSET, fileLine = 1;
         let dataArea = false, finishedVerify = false;
         for (let i = 0; i < lines.length; i++) {
-            // Parse instruction and generate memory address for instruction
+            // Parse instruction in each line
             let instruction = parseInstruction(lines[i]);
             if (instruction.indexOf('Unknown Register') > -1) {
+                // Current instruction set contains a register greater than 31 or an invalid register
                 alert('Line ' + fileLine + ': ' + instruction);
                 mem = tempMem;
                 labels = tempLabels;
+                newUpload = false;
                 return;
             }
             if (instruction.length > 0) console.log(instruction);
@@ -70,13 +82,19 @@ function verifyFile() {
                 alert('Total instruction count exceeds memory limit: ' + MEMORY_SIZE + ' blocks');
                 mem = tempMem;
                 labels = tempLabels;
+                newUpload = false;
                 return;
             }
 
             // Verify and add instruction to memory
             if (dict.has(instruction[0])) {
+                // Dictionary has instruction
+                //let bin = opcode(instruction);
+                //instruction.append(bin);
                 write(memoryAddress, instruction);
-            }else if (instruction.length === 0 || instruction[0] === null || instruction[0].match(/^ *$/) !== null) {
+            }else if (instruction.length === 0) {
+                // Parsed line is empty
+                console.log(instruction);
                 memoryAddress--;
             } else if (instruction[0].indexOf(':') > -1) {
                 // Label found: Make sure ':' is the last character of the label
@@ -118,11 +136,15 @@ function verifyFile() {
             } else if (instruction[0].indexOf('#') === 0) {
                 memoryAddress--;
             } else {
+                // Instruction in file is incorrect or does not exist
                 alert('Line ' + fileLine + ': \'' + instruction[0] + '\' is not a proper instruction');
                 mem = tempMem;
                 labels = tempLabels;
+                newUpload = false;
                 return;
             }
+
+            // increment values until EOF
             memoryAddress++;
             fileLine++;
             if (i+1 === lines.length) finishedVerify = true;
@@ -139,6 +161,7 @@ function verifyFile() {
 }
 
 function parseInstruction(line) {
+    // Replace certain characters with ',' and separate comments
     line = line.replace(/;/g, ',').trim();
     line = line.replace('/*', ' /* ');
     line = line.replace('*/', ' */ ');
@@ -147,6 +170,8 @@ function parseInstruction(line) {
     line = line.replace(/\(/g, ',');
     line = line.replace(/\)/g, '');
     let tempArr = line.split(',');
+
+    // Remove any empty array indexes
     tempArr = tempArr.filter(function (value) {
         return value !== '';
     });

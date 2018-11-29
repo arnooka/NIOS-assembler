@@ -59,7 +59,7 @@ function memoryInit() {
         mem = [];
     }
     for (let i = 0; i < 32; i++) mem[i] = 0;
-    pc = 0x40;
+    pc = 0;
 }
 
 // Writes data to memory at a certain address

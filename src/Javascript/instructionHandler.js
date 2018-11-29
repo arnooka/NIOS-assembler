@@ -235,7 +235,7 @@ function executeInstruction(address) {
         return 1;
     } else if (instruction === 'ret') {
         // return to address at r31
-        return read(31);
+        return read(31) - MEM_OFFSET;
     } else if (instruction === 'rol') {
 
     } else if (instruction === 'roli') {
@@ -285,70 +285,70 @@ function executeInstruction(address) {
         return 1;
     } else if (instruction === 'beq') {
         if (read(parseOutReg(a)) === read(parseOutReg(b))) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'bge') {
         if (read(parseOutReg(a)) >= read(parseOutReg(b))) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'bgeu') {
         if (unsignedA32 >= unsignedB32) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'bgt') {
         if (read(parseOutReg(a)) > read(parseOutReg(b))) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'bgtu') {
         if (unsignedA32 > unsignedB32) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'ble') {
         if (read(parseOutReg(a)) <= read(parseOutReg(b))) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'bleu') {
         if (unsignedA32 <= unsignedB32) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'blt') {
         if (read(parseOutReg(a)) < read(parseOutReg(b))) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'bltu') {
         if (unsignedA32 < unsignedB32) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'bne') {
         if (read(parseOutReg(a)) !== read(parseOutReg(b))) {
-            return labels.get(c);
+            return labels.get(c) - MEM_OFFSET;
         } else {
             return 1;
         }
     } else if (instruction === 'br') {
         if (isNaN(parseInt(a))) {
-            if (address === parseInt(labels.get(a))) {
+            if (address === labels.get(a)) {
                 return 'finished';
             }
-            return parseInt(labels.get(a));
+            return labels.get(a) - MEM_OFFSET;
         } else if (address === parseInt(a)) {
             return 'finished';
         }
@@ -401,6 +401,7 @@ function executeInstruction(address) {
         } else {
             write(parseOutReg(a), 0);
         }
+        return 1;
     } else if (instruction === 'cmple') {
         if (read(parseOutReg(b)) <= read(parseOutReg(c))) {
             write(parseOutReg(a), 1);
@@ -518,9 +519,9 @@ function executeInstruction(address) {
     else if (instruction === 'call') {
         // Use map to return address of label in data, set r31 to pc + 1;
         write(31, address + 1);
-        return labels.get(a);
+        return labels.get(a) - MEM_OFFSET;
     } else if (instruction === 'jmpi') {
-        return labels.get(a);
+        return labels.get(a) - MEM_OFFSET;
     } else if (instruction === 'nop') {
         return 1;
     } else {
