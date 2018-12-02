@@ -10,14 +10,14 @@ function updateRegisterTable() {
     let clist = $("#registerValues"); // This reference speeds up the run time
     $("#registerValues").html("");
     clist.append(
-        '<tr style = " background-color : darkgray "><th>PC</th><th>' + pc + '</th></tr>' +
+        '<tr style = " background-color : darkgray "><th>PC</th><th>' + pc * 4 + '</th></tr>' +
         '<tr><th>Register</th><th>Value</th></tr>'
     );
     for (let i = 0; i < 32; i++) {
         let r = "r";
         r += i;
         clist.append(
-            `<tr><td >${r}</td>` + "<td>" + mem[i] + "</tr></td>"
+            `<tr><td >${r}</td>` + "<td>" + reg[i] + "</tr></td>"
         );
     }
 }
@@ -30,7 +30,7 @@ function updateMemoryTable() {
         '<tr style="background-color: darkgray "><th>Memory Location</th><th>Value</th><td></td></tr>'
     );
 
-    let memAddress = 0x40;
+    let memAddress = 0;
     for (let i = 0; i < 16; i++) {
         let hex = '0x' + memAddress.toString(16);
         clist.append(
@@ -43,8 +43,8 @@ function updateMemoryTable() {
 }
 
 function memoryCheck(memAddress) {
-    let verify = read(memAddress);
-    if (verify != undefined) {
+    let verify = memRead(memAddress);
+    if (verify !== undefined) {
         return verify; // TODO: format instruction somehow?
     } else {
         return "No Data";
@@ -52,7 +52,11 @@ function memoryCheck(memAddress) {
 }
 
 function memoryButton(id) {
-    let person = prompt("Enter memory address:", "0x");
-    document.getElementById(`tableRow + ${id}`).cells[0].innerHTML = person;
-    document.getElementById(`tableRow + ${id}`).cells[1].innerHTML = memoryCheck(person);
+    let address = prompt("Enter memory address:", "0x");
+    if (address.indexOf('0x') !== -1){
+        alert('Address must have \'0x\' leading value');
+        return;
+    }
+    document.getElementById(`tableRow + ${id}`).cells[0].innerHTML = address;
+    document.getElementById(`tableRow + ${id}`).cells[1].innerHTML = memoryCheck(parseInt(address));
 }

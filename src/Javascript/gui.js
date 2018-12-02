@@ -4,7 +4,7 @@
 
 // Boolean logic
 let paused = true, programRunning = false, runPressed = false;
-let debug = false, finished = false;
+let debug = false, reset = false, finished = false;
 let interval = null;
 const INTERVAL_LENGTH = 5;
 
@@ -37,36 +37,25 @@ pauseButton.addEventListener('click', function() {
     if (!paused) {
         paused = true;
         programRunning = false;
-    } else return;
+    }
     if (paused) {
         if (interval !== null) {
             clearInterval(interval);
             interval = null;
         }
         runButton.innerHTML = 'Resume';
-        alert('Program paused');
+        if (reset) alert('Program reset');
+        else alert('Program paused');
+        reset = false;
     }
 });
 
 resetButton.addEventListener('click', function() {
-    // TODO: Rethink how reset works
-    if (debug) {
-        resetGui();
-        return;
-    }
-    paused = false;
-    programRunning = true;
-    runButton.innerHTML = 'Running';
+    reset = true;
+    pauseButton.click();
+    if (debug) runButton.innerHTML = 'Step';
+    else runButton.innerHTML = 'Run';
     resetGui();
-    if (interval === null) {
-        runProgram();
-    } else {
-        if (interval !== null) {
-            clearInterval(interval);
-            interval = null;
-        }
-        runProgram();
-    }
 });
 
 debugButton.addEventListener('click', function () {

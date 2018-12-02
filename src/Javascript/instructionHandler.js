@@ -41,69 +41,46 @@ Instructions:
 call, jmpi,
  */
 
-let arr32 = new Uint32Array(1);
-let arr16 = new Uint16Array(1);
-let arr8 = new Uint8Array(1);
+/* Might be used to deal with instructions that don't fit the types or for pseudo-Instructions
+Instructions:
+nop,
+*/
+function executeOther(Oinstruction, operands) {
+    if (!Oinstruction) {
+        console.log('No instruction passed to execute other');
+        return;
+    } if (Oinstruction === 'nop') {
+        // do nothing?
+    }
+}
+
 function executeInstruction(address) {
-    let data = read(address);
+    let data = memRead(address);
     if (data === undefined) {
         return 'Undefined memory';
     }
-    let a = null, b = null, c = null;
-    let unsignedA32 = null, unsignedB32 = null, unsignedC32 = null;
-    let unsignedA16 = null, unsignedB16 = null, unsignedC16 = null;
-    let unsignedA8 = null, unsignedB8 = null, unsignedC8 = null;
+    let ra = null, rb = null, rc = null;
     let instruction = data[0];
 
     if (data[1] === 'r0') {
         return 'Cannot write to r0';
     }
 
+    // Parse a, b, and c operands as registers if they exist
     if (data[1]) {
-        a = data[1];
-        if (a.indexOf('r') === 0) {
-            arr32[0] = read(parseOutReg(a));
-            arr16[0] = read(parseOutReg(a));
-            arr8[0]  = read(parseOutReg(a));
-        } else if (!isNaN(a)) {
-            arr32[0] = parseInt(a);
-            arr16[0] = parseInt(a);
-            arr8[0]  = parseInt(a);
-        }
-        unsignedA32 = arr32[0];
-        unsignedA16 = arr16[0];
-        unsignedA8  = arr8[0];
+        if (data[1].indexOf('r') === 0) ra = parseOutReg(data[1]);
+        else if (labels.has(data[1])) ra = labels.get(data[1]);
+        else if (!isNaN(parseInt(data[1]))) ra = parseInt(data[1]);
     }
     if (data[2]) {
-        b = data[2];
-        if (b.indexOf('r') === 0) {
-            arr32[0] = read(parseOutReg(b));
-            unsignedB32 = arr32[0];
-            unsignedB16 = arr16[0];
-            unsignedB8  = arr8[0];
-        } else if (!isNaN(b)) {
-            arr32[0] = parseInt(b);
-            arr16[0] = parseInt(b);
-            arr8[0]  = parseInt(b);
-        }
-        unsignedB32 = arr32[0];
-        unsignedB16 = arr16[0];
-        unsignedB8  = arr8[0];
+        if (data[2].indexOf('r') === 0) rb = parseOutReg(data[2]);
+        else if (labels.has(data[2])) rb = labels.get(data[2]);
+        else if (!isNaN(parseInt(data[2]))) rb = parseInt(data[2]);
     }
     if (data[3]) {
-        c = data[3];
-        if (c.indexOf('r') === 0) {
-            arr32[0] = read(parseOutReg(c));
-            arr16[0] = read(parseOutReg(c));
-            arr8[0]  = read(parseOutReg(c));
-        } else if (!isNaN(c)) {
-            arr32[0] = parseInt(c);
-            arr16[0] = parseInt(c);
-            arr8[0]  = parseInt(c);
-        }
-        unsignedC32 = arr32[0];
-        unsignedC16 = arr16[0];
-        unsignedC8  = arr8[0];
+        if (data[3].indexOf('r') === 0) rc = parseOutReg(data[3]);
+        else if (labels.has(data[3])) rc = labels.get(data[3]);
+        else if (!isNaN(parseInt(data[3]))) rc = parseInt(data[3]);
     }
 
     if (!instruction) {
@@ -112,12 +89,14 @@ function executeInstruction(address) {
 
     //R types ---------------------------------------------------------------------------
     if (instruction === 'add') {
-        let result = read(parseOutReg(b)) + read(parseOutReg(c));
-        write(parseOutReg(a), result);
+        let result = regRead(rb) + regRead(rc);
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'and') {
-        let result = read(parseOutReg(b)) & read(parseOutReg(c));
-        write(parseOutReg(a), result);
+        let result = regRead(rb) & regRead(rc);
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'break') {
         return 'break';
@@ -125,104 +104,118 @@ function executeInstruction(address) {
         //breakpoint return, so resume execution?
         return 1;
     } else if (instruction === 'callr') {
-        write(31, address + 1);
-        return read(parseOutReg(a));
+        regWrite(31, address + 1);
+        return regRead(ra);
     } else if (instruction === 'cmpeq') {
-        if (read(parseOutReg(b)) === read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) === regRead(rc)) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpgei') {
-        if (read(parseOutReg(b)) >= parseInt(c)) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) >= rc) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpgeu') {
-        if (unsignedB32 >= unsignedC32) {
-            write(parseOutReg(a), 1);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(regRead(rc), 'uint');
+        if (bVal >= cVal) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmplt') {
-        if (read(parseOutReg(b)) <= read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) <= regRead(rc)) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpltu') {
-        if (unsignedB32 <= unsignedC32) {
-            write(parseOutReg(a), 1);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(regRead(rc), 'uint');
+        if (bVal <= cVal) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(rb, 0);
         }
         return 1;
     } else if (instruction === 'cmpne') {
-        if (read(parseOutReg(b)) !== read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) !== regRead(rc)) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'custom') {
         return 1;
     } else if (instruction === 'div') {
-        if (read(parseOutReg(c)) === 0) {
-            write(parseOutReg(a), undefined);
+        if (regRead(rc) === 0) {
+            regWrite(ra, undefined);
         } else {
-            let value = read(parseOutReg(b)) / read(parseOutReg(c));
-            write(parseOutReg(a), value);
+            let result = binCap(regRead(rb) / regRead(rc));
+            regWrite(ra, result);
         }
         return 1;
     } else if (instruction === 'divu') {
-        if (unsignedC32 === 0) {
-            write(parseOutReg(a), undefined);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(regRead(rc), 'uint');
+        if (cVal === 0) {
+            regWrite(ra, undefined);
         } else {
-            let value = unsignedB32 / unsignedC32;
-            write(parseOutReg(a), value);
+            let result = binCap(bVal / cVal);
+            regWrite(ra, result);
         }
         return 1;
     } else if (instruction === 'jmp') {
-        return read(parseOutReg(a));
+        return regRead(ra);
     } else if (instruction === 'mov') {
-        write(parseOutReg(a), parseOutReg(b));
+        regWrite(ra, regRead(rb));
         return 1;
     } else if (instruction === 'mul') {
-        let value = read(parseOutReg(b)) * read(parseOutReg(c));
-        write(parseOutReg(a), value);
+        let result = regRead(rb) * regRead(rc);
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'mulxss') {
-        let value = read(parseOutReg(b)) * read(parseOutReg(c));
-        write(parseOutReg(a), value);
+        let result = regRead(rb) * regRead(rc);
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'mulxsu') {
-        let value = read(parseOutReg(b)) * unsignedC32;
-        write(parseOutReg(a), value);
+        let cVal = binCap(regRead(rc), 'uint');
+        let result = regRead(rb) * cVal;
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'mulxuu') {
-        let value = unsignedB32 * unsignedC32;
-        write(parseOutReg(a), value);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(regRead(rc), 'uint');
+        let result = bVal * cVal;
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'nextpc') {
         // puts the address of the next instruction in the register;
-         write(parseOutReg(a), address+1);
+         regWrite(ra, address+1);
          return 1;
     } else if (instruction === 'nor') {
-        let value = ~(read(parseOutReg(b)) | read(parseOutReg(c)));
-        write(parseOutReg(a), value);
+        let result = ~(regRead(rb) | regRead(rc));
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'or') {
-        let value = read(parseOutReg(b)) | read(parseOutReg(c));
-        write(parseOutReg(a), value);
+        let result = regRead(rb) | regRead(rc);
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'ret') {
         // return to address at r31
-        return read(31);
+        return regRead(31);
     } else if (instruction === 'rol') {
 
     } else if (instruction === 'roli') {
@@ -230,211 +223,243 @@ function executeInstruction(address) {
     } else if (instruction === 'ror') {
 
     } else if (instruction === 'sll') {
-        let result = read(parseOutReg(b)) << read(parseOutReg(c));
-        write(parseOutReg(a), result);
+        let result = regRead(rb) << binCap(regRead(rc), 'int', 5);
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'slli') {
-        let result = read(parseOutReg(b)) << parseInt(c);
-        write(parseOutReg(a), result);
+        let result = regRead(rb) << binCap(rc, 'int', 5);
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'sra') {
-        write(parseOutReg(a), read(parseOutReg(b)) >>> unsignedC32); // TODO: Double check
+        let cVal = binCap(regRead(rc), 'uint', 5);
+        let result = binCap(regRead(rb) >>> cVal);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'srai') {
-        write(parseOutReg(a), read(parseOutReg(b)) >>> unsignedC32); // TODO: Double check
+        let cVal = binCap(rc, 'uint', 5);
+        let result = binCap(regRead(rb) >>> cVal);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'srl') {
-        write(parseOutReg(a), unsignedB32 >>> unsignedC32); // TODO: Double check
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(regRead(rc), 'uint');
+        let result = binCap(bVal >>> cVal);
+        regWrite(ra, result); // TODO: Double check
         return 1;
     } else if (instruction === 'srli') {
-        write(parseOutReg(a), unsignedB32 >>> unsignedC32); // TODO: Double check
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(rc, 'uint');
+        let result = binCap(bVal >>> cVal);
+        regWrite(ra, result); // TODO: Double check
         return 1;
     } else if (instruction === 'sub') {
-        let value = read(parseOutReg(b)) - read(parseOutReg(c));
-        write(parseOutReg(a), value);
+        let result = regRead(rb) - regRead(rc);
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'sync') {
         return 1;
     } else if (instruction === 'xor') {
-        write(parseOutReg(a), read(parseOutReg(b)) ^ read(parseOutReg(c)));
+        let result = binCap(regRead(rb) ^ regRead(rc));
+        regWrite(ra, result);
         return 1;
     }
     // I TYPES ------------------------------------------------------------------------------------------------------------
     else if (instruction === 'addi') {
-        let value = read(parseOutReg(b)) + parseInt(c);
-        write(parseOutReg(a), value);
+        let result = regRead(rb) + rc;
+        result = binCap(result);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'andhi') {
 
     } else if (instruction === 'andi') {
-        let value = read(parseOutReg(b)) & parseInt(c);
-        write(parseOutReg(a), value);
+        let result = regRead(rb) & rc;
+        result = binCap(result);
+        regWrite(parseOutReg(ra), result);
         return 1;
     } else if (instruction === 'beq') {
-        if (read(parseOutReg(a)) === read(parseOutReg(b))) {
-            return labels.get(c);
+        if (regRead(ra) === regRead(rb)) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'bge') {
-        if (read(parseOutReg(a)) >= read(parseOutReg(b))) {
-            return labels.get(c);
+        if (regRead(ra) === regRead(rb)) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'bgeu') {
-        if (unsignedA32 >= unsignedB32) {
-            return labels.get(c);
+        let aVal = binCap(regRead(ra), 'uint');
+        let bVal = binCap(regRead(rb), 'uint');
+        if (aVal >= bVal) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'bgt') {
-        if (read(parseOutReg(a)) > read(parseOutReg(b))) {
-            return labels.get(c);
+        if (regRead(ra) > regRead(rb)) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'bgtu') {
-        if (unsignedA32 > unsignedB32) {
-            return labels.get(c);
+        let aVal = binCap(regRead(ra), 'uint');
+        let bVal = binCap(regRead(rb), 'uint');
+        if (aVal > bVal) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'ble') {
-        if (read(parseOutReg(a)) <= read(parseOutReg(b))) {
-            return labels.get(c);
+        if (regRead(ra) <= regRead(rb)) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'bleu') {
-        if (unsignedA32 <= unsignedB32) {
-            return labels.get(c);
+        let aVal = binCap(regRead(ra), 'uint');
+        let bVal = binCap(regRead(rb), 'uint');
+        if (aVal <= bVal) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'blt') {
-        if (read(parseOutReg(a)) < read(parseOutReg(b))) {
-            return labels.get(c);
+        if (regRead(ra) < regRead(rb)) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'bltu') {
-        if (unsignedA32 < unsignedB32) {
-            return labels.get(c);
+        let aVal = binCap(regRead(ra), 'uint');
+        let bVal = binCap(regRead(rb), 'uint');
+        if (aVal < bVal) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'bne') {
-        if (read(parseOutReg(a)) !== read(parseOutReg(b))) {
-            return labels.get(c);
+        if (regRead(ra) !== regRead(rb)) {
+            return rc;
         } else {
             return 1;
         }
     } else if (instruction === 'br') {
-        if (isNaN(parseInt(a))) {
-            if (address === parseInt(labels.get(a))) {
-                return 'finished';
-            }
-            return parseInt(labels.get(a));
-        } else if (address === parseInt(a)) {
+        if (address === ra) {
             return 'finished';
         }
-        return parseInt(a);
+        return ra;
     } else if (instruction === 'cmpeqi') {
-        if (read(parseOutReg(b) === parseInt(c))) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) === rc) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpge') {
-        if (read(parseOutReg(b)) >= read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) >= regRead(rc)) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpgeui') {
-        if (unsignedB32 >= unsignedC32) {
-            write(parseOutReg(a), 1);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(rc, 'uint');
+        if (bVal >= cVal) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpgt') {
-        if (read(parseOutReg(b)) > read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) > regRead(rc)) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpgti') {
-        if (read(parseOutReg(b)) > parseInt(c)) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) > rc) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpgtu') {
-        if (unsignedB32 > unsignedC32) {
-            write(parseOutReg(a), 1);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(regRead(rc), 'uint');
+        if (bVal > cVal) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpgtui') {
-        if (unsignedB32 > unsignedC32) {
-            write(parseOutReg(a), 1);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(rc, 'uint');
+        if (bVal > cVal) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
+        return 1;
     } else if (instruction === 'cmple') {
-        if (read(parseOutReg(b)) <= read(parseOutReg(c))) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) <= regRead(rb)) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmplei') {
-        if (read(parseOutReg(b)) <= parseInt(c)) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) <= rc) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpleu') {
-        if (unsignedB32 <= unsignedC32) {
-            write(parseOutReg(a), 1);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(regRead(rc), 'uint');
+        if (bVal <= cVal) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpleui') {
-        if (unsignedB32 <= unsignedC32) {
-            write(parseOutReg(a), 1);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(rc, 'uint');
+        if (bVal <= cVal) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmplti') {
-        if (read(parseOutReg(b)) < parseInt(c)) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) < rc) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpltui') {
-        if (unsignedB32 < unsignedC32) {
-            write(parseOutReg(a), 1);
+        let bVal = binCap(regRead(rb), 'uint');
+        let cVal = binCap(rc, 'uint');
+        if (bVal <= cVal) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'cmpnei') {
-        if (unsignedB32 < unsignedC32) {
-            write(parseOutReg(a), 1);
+        if (regRead(rb) < rc) {
+            regWrite(ra, 1);
         } else {
-            write(parseOutReg(a), 0);
+            regWrite(ra, 0);
         }
         return 1;
     } else if (instruction === 'ldb') {
@@ -446,76 +471,64 @@ function executeInstruction(address) {
     } else if (instruction === 'ldhu') {
 
     } else if (instruction === 'ldw') {
-        if (isNaN(b)) {
-            c = b;
-            b = 0;
+        if (isNaN(rb)) {
+            rc = rb;
+            rb = 0;
         }
-        let value =  parseInt(b) + read(parseOutReg(c));
-        write(parseOutReg(a), read(value));
+        let result =  parseInt(rb) + regRead(parseOutReg(rc));
+        regWrite(parseOutReg(ra), regRead(result));
         return 1;
     } else if (instruction === 'movhi') {
 
     } else if (instruction === 'movi') {
-        write(parseOutReg(a), parseInt(b));
+        regWrite(ra, rb);
         return 1;
     } else if (instruction === 'movia') {
-        if (labels.has(b)) {
-            let value = parseInt(labels.get(b));
-            write(parseOutReg(a), value);
-        } else {
-            write(parseOutReg(a), parseInt(b));
-        }
+        regWrite(ra, rb);
         return 1;
     } else if (instruction === 'movui') {
-        write(parseOutReg(a), unsignedB32);
+        let bVal = binCap(rb, 'uint');
+        regWrite(ra, bVal);
         return 1;
     } else if (instruction === 'muli') {
-        let value = read(parseOutReg(b)) * parseInt(c);
-        write(parseOutReg(a), value);
+        let result = binCap(regRead(rb) * rc);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'orhi') {
 
     } else if (instruction === 'ori') {
-        let value = read(parseOutReg(b)) | parseInt(c);
-        write(parseOutReg(a), value);
+        let result = binCap(regRead(rb) | rc);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'stb') {
 
     } else if (instruction === 'sth') {
 
     } else if (instruction === 'stw') {
-        if (isNaN(b)) {
-            c = b;
-            b = 0;
+        if (isNaN(rb)) {
+            rc = rb;
+            rb = 0;
         }
-
-        if (mem[parseOutReg(c)] === 65534) {
-            setSevenSegment(a);
-        }
-        //TODO check if storing at address for seven seg display
-
-        console.log('address: ' + parseOutReg(c) + '\nLine 2: ' + parseInt(b));
-        console.log('a: ' + a);
-        write(parseOutReg(c) + parseInt(b), a);
+        regWrite(parseOutReg(rc) + parseInt(rb), ra);
         return 1;
     } else if (instruction === 'subi') {
-        let value = read(parseOutReg(b)) - parseInt(c);
-        write(parseOutReg(a), value);
+        let result = binCap(regRead(rb) - rc);
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'xorhi') {
 
     } else if (instruction === 'xori') {
-        let value = read(parseOutReg(b)) ^ parseInt(c);
-        write(parseOutReg(a), value);
+        let result = binCap(regRead(rb) ^ rc);
+        regWrite(ra, result);
         return 1;
     }
     // J Types --------------------------------------------------------------------------------------------
     else if (instruction === 'call') {
         // Use map to return address of label in data, set r31 to pc + 1;
-        write(31, address + 1);
-        return labels.get(a);
+        regWrite(31, address + 1);
+        return ra;
     } else if (instruction === 'jmpi') {
-        return labels.get(a);
+        return ra;
     } else if (instruction === 'nop') {
         return 1;
     } else {
@@ -526,14 +539,7 @@ function executeInstruction(address) {
 function parseOutReg(register) {
     if (register) {
         register = register.replace('r', '');
-        let parsed = parseInt(register);
-
-        if (isNaN(parsed)) {
-            console.error('Register conversion in parseOutReg function failed, register is not a number. Current PC is: ' + pc);
-            return register;
-        }
-
-        return parsed;
+        return parseInt(register);
     }
 }
 
