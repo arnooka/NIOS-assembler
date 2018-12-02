@@ -533,14 +533,13 @@ function setSevenSegment(instruction) {
     // 32 bits for all 4 displays, each gets 8 bits
     // mem[0xFFFE] for seven segment display
     let display = [0,0,0,0];
-    display[0] = instruction & 0x000000DF;
+    display[0] =  instruction & 0x000000DF;
     display[1] = (instruction & 0x0000DF00) >> 8;
     display[2] = (instruction & 0x00DF0000) >> 16;
     display[3] = (instruction & 0xDF000000) >> 24;
 
     for (let i = 0; i<4; i++) {
         if (display[i] == 0x3f) {
-            // set display[i] = 0
             display[i] = 0
         } else if (display[i] == 0x06) {
             display[i] = 1
@@ -562,7 +561,7 @@ function setSevenSegment(instruction) {
             display[i] = 9
         } else if (display[i] == 0x40) {
             display[i] = '-'
-        } else if (display[i] == 0xF7) {
+        } else if (display[i] == 0xD7) {
             display[i] = 'A'
         } else if (display[i] == 0x7C) {
             display[i] = 'B'
@@ -578,6 +577,8 @@ function setSevenSegment(instruction) {
     }
 
     // TODO Change gui text boxes of each display
+
+
 
 
 }
