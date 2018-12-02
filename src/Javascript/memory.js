@@ -49,6 +49,10 @@
 const MEMORY_SIZE = 65536;
 let mem = [];
 
+mem[0xFFFF] = 0; // slider swtiches
+mem[0xFFFE] = 0; // seven segment display
+
+
 // Set up function of the memory
 function memoryInit() {
     //console.log('memory Init called');

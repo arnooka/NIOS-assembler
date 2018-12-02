@@ -525,31 +525,59 @@ function parseOutReg(register) {
             return register;
         }
 
-        // if (parsed === 10) {parsed = 'a'}
-        // else if (parsed === 11) {parsed = 'b'}
-        // else if (parsed === 12) {parsed = 'c'}
-        // else if (parsed === 13) {parsed = 'd'}
-        // else if (parsed === 14) {parsed = 'e'}
-        // else if (parsed === 15) {parsed = 'f'}
-        // else if (parsed === 16) {parsed = '10'}
-        // else if (parsed === 17) {parsed = '11'}
-        // else if (parsed === 18) {parsed = '12'}
-        // else if (parsed === 19) {parsed = '13'}
-        // else if (parsed === 20) {parsed = '14'}
-        // else if (parsed === 21) {parsed = '15'}
-        // else if (parsed === 22) {parsed = '16'}
-        // else if (parsed === 23) {parsed = '17'}
-        // else if (parsed === 24) {parsed = '18'}
-        // else if (parsed === 25) {parsed = '19'}
-        // else if (parsed === 26) {parsed = '1a'}
-        // else if (parsed === 27) {parsed = '1b'}
-        // else if (parsed === 28) {parsed = '1c'}
-        // else if (parsed === 29) {parsed = '1d'}
-        // else if (parsed === 30) {parsed = '1e'}
-        // else if (parsed === 31) {parsed = '1f'}
-        // parsed = '0x' + parsed;
-        // return parseInt(parsed);;
-
         return parsed;
     }
+}
+
+function setSevenSegment(instruction) {
+    // 32 bits for all 4 displays, each gets 8 bits
+    // mem[0xFFFE] for seven segment display
+    let display = [0,0,0,0];
+    display[0] = instruction & 0x000000DF;
+    display[1] = (instruction & 0x0000DF00) >> 8;
+    display[2] = (instruction & 0x00DF0000) >> 16;
+    display[3] = (instruction & 0xDF000000) >> 24;
+
+    for (let i = 0; i<4; i++) {
+        if (display[i] == 0x3f) {
+            // set display[i] = 0
+            display[i] = 0
+        } else if (display[i] == 0x06) {
+            display[i] = 1
+        } else if (display[i] == 0x5B) {
+            display[i] = 2
+        } else if (display[i] == 0x4F) {
+            display[i] = 3
+        } else if (display[i] == 0x26) {
+            display[i] = 4
+        } else if (display[i] == 0x5D) {
+            display[i] = 5
+        } else if (display[i] == 0x7D) {
+            display[i] = 6
+        } else if (display[i] == 0x07) {
+            display[i] = 7
+        } else if (display[i] == 0x07) {
+            display[i] = 8
+        } else if (display[i] == 0x67) {
+            display[i] = 9
+        } else if (display[i] == 0x40) {
+            display[i] = '-'
+        } else if (display[i] == 0xF7) {
+            display[i] = 'A'
+        } else if (display[i] == 0x7C) {
+            display[i] = 'B'
+        } else if (display[i] == 0x39) {
+            display[i] = 'C'
+        } else if (display[i] == 0x5E) {
+            display[i] = 'D'
+        } else if (display[i] == 0x79) {
+            display[i] = 'E'
+        }  else if (display[i] == 0x71) {
+            display[i] = 'F'
+        }
+    }
+
+    // TODO Change gui text boxes of each display
+
+
 }
