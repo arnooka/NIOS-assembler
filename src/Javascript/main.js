@@ -188,13 +188,15 @@ function registerCheck(operand) {
 
 function setSliderSwitch(sliderNumber) {
     // mem[0xFFFF] for slider swtiches, last 4 bits are the only ones used
+
     if (sliderNumber === 0) {
-        mem[0xFFFF] = mem[0xFFFF] | 0x1;
+        mem[0xFFFF] = mem[0xFFFF] ^ 0x1;
     } else if (sliderNumber === 1) {
-        mem[0xFFFF] = mem[0xFFFF] | 0x2;
+        mem[0xFFFF] = mem[0xFFFF] ^ 0x2;
     } else if (sliderNumber === 2) {
-        mem[0xFFFF] = mem[0xFFFF] | 0x4;
+        mem[0xFFFF] = mem[0xFFFF] ^ 0x4;
     } else if (sliderNumber === 3) {
-        mem[0xFFFF] = mem[0xFFFF] | 0x8;
+        mem[0xFFFF] = mem[0xFFFF] ^ 0x8;
     }
+
 }

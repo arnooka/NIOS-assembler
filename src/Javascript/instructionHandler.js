@@ -488,6 +488,14 @@ function executeInstruction(address) {
             c = b;
             b = 0;
         }
+
+        if (mem[parseOutReg(c)] === 65534) {
+            setSevenSegment(a);
+        }
+        //TODO check if storing at address for seven seg display
+
+        console.log('address: ' + parseOutReg(c) + '\nLine 2: ' + parseInt(b));
+        console.log('a: ' + a);
         write(parseOutReg(c) + parseInt(b), a);
         return 1;
     } else if (instruction === 'subi') {
@@ -533,6 +541,8 @@ function setSevenSegment(instruction) {
     // 32 bits for all 4 displays, each gets 8 bits
     // mem[0xFFFE] for seven segment display
     let display = [0,0,0,0];
+    instruction = mem[parseOutReg(instruction)];
+    console.log('instruction:  ' + instruction);
     display[0] =  instruction & 0x000000DF;
     display[1] = (instruction & 0x0000DF00) >> 8;
     display[2] = (instruction & 0x00DF0000) >> 16;
@@ -540,45 +550,49 @@ function setSevenSegment(instruction) {
 
     for (let i = 0; i<4; i++) {
         if (display[i] == 0x3f) {
-            display[i] = 0
+            display[i] = '0'
         } else if (display[i] == 0x06) {
-            display[i] = 1
+            display[i] = '1'
         } else if (display[i] == 0x5B) {
-            display[i] = 2
+            display[i] = '2'
         } else if (display[i] == 0x4F) {
-            display[i] = 3
+            display[i] = '3'
         } else if (display[i] == 0x26) {
-            display[i] = 4
+            display[i] = '4'
         } else if (display[i] == 0x5D) {
-            display[i] = 5
+            display[i] = '5'
         } else if (display[i] == 0x7D) {
-            display[i] = 6
+            display[i] = '6'
         } else if (display[i] == 0x07) {
-            display[i] = 7
+            display[i] = '7'
         } else if (display[i] == 0x07) {
-            display[i] = 8
+            display[i] = '8'
         } else if (display[i] == 0x67) {
-            display[i] = 9
+            display[i] = '9'
         } else if (display[i] == 0x40) {
             display[i] = '-'
         } else if (display[i] == 0xD7) {
             display[i] = 'A'
         } else if (display[i] == 0x7C) {
-            display[i] = 'B'
+            display[i] = 'b'
         } else if (display[i] == 0x39) {
             display[i] = 'C'
         } else if (display[i] == 0x5E) {
-            display[i] = 'D'
+            display[i] = 'd'
         } else if (display[i] == 0x79) {
             display[i] = 'E'
         }  else if (display[i] == 0x71) {
             display[i] = 'F'
-        }
+        } else display[i] = '';
     }
 
-    // TODO Change gui text boxes of each display
 
-
+    document.getElementById(`segmentRow`).cells[0].innerHTML = display[3];
+    document.getElementById(`segmentRow`).cells[1].innerHTML = display[2];
+    document.getElementById(`segmentRow`).cells[2].innerHTML = display[1];
+    document.getElementById(`segmentRow`).cells[3].innerHTML = display[0];
 
 
 }
+
+

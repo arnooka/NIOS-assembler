@@ -33,25 +33,26 @@
 
     <div class = "segmentDisplay">
     <table id="segmentDisplay" class="table table-striped carrier-table">
-        <tr><th style ="border-right: 1px solid black">0</th><th style ="border-right: 1px solid black" >0</th>
-            <th style ="border-right: 1px solid black" >0</th><th>0</th></tr>
+        <tr id="segmentRow"><th style ="border-right: 1px solid black" id="seg0">-</th>
+            <th style ="border-right: 1px solid black" id="seg1">-</th>
+            <th style ="border-right: 1px solid black" id="seg2">-</th>
+            <th id="seg3">-</th></tr>
     </table>
-
-
-    <label class="switch" id = "switch1" onclick>
-        <input type="checkbox">
+        
+    <label class="switch" id="switch1" >
+        <input type="checkbox" onclick="setSliderSwitch(3)">
         <span class="slider"></span>
     </label>
-    <label class="switch">
-        <input type="checkbox">
+    <label class="switch" >
+        <input type="checkbox" onclick="setSliderSwitch(2)">
         <span class="slider"></span>
     </label>
-    <label class="switch">
-        <input type="checkbox">
+    <label class="switch" >
+        <input type="checkbox" onclick="setSliderSwitch(1)">
         <span class="slider"></span>
     </label>
-    <label class="switch">
-        <input type="checkbox">
+    <label class="switch" >
+        <input type="checkbox" onclick="setSliderSwitch(0)">
         <span class="slider"></span>
     </label>
     </div>
