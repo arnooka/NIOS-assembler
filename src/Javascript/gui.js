@@ -37,7 +37,7 @@ pauseButton.addEventListener('click', function() {
     if (!paused) {
         paused = true;
         programRunning = false;
-    } else return;
+    }
     if (paused) {
         if (interval !== null) {
             clearInterval(interval);

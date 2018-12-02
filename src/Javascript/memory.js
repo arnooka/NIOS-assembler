@@ -48,6 +48,7 @@
 // Memory is represented in a 65,536 byte array
 const MEMORY_SIZE = 65536;
 let mem = [];
+let reg = [];
 
 // Set up function of the memory
 function memoryInit() {
@@ -55,20 +56,29 @@ function memoryInit() {
     // Initializing all registers in memory to zero
     // Ex. mem[1] = r1 mem[2] = r2 ... mem[25] = r25
     if (newUpload) {
-        // Clear memory only if new file is uploaded
+        // Clear memory and registers only if new file is uploaded
         mem = [];
+        reg = [];
     }
-    for (let i = 0; i < 32; i++) mem[i] = 0;
+    for (let i = 0; i < 32; i++) reg[i] = 0;
     pc = 0;
 }
 
+function regWrite(register, data) {
+    reg[register] = data;
+}
+
+function regRead(register) {
+    return reg[register];
+}
+
 // Writes data to memory at a certain address
-function write(memAddress, data) {
+function memWrite(memAddress, data) {
     mem[memAddress] = data;
 }
 
 // Reads array by address and return whats at that address
-function read(memAddress) {
+function memRead(memAddress) {
     return mem[memAddress];
 }
 

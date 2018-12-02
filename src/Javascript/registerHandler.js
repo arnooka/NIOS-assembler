@@ -17,7 +17,7 @@ function updateRegisterTable() {
         let r = "r";
         r += i;
         clist.append(
-            `<tr><td >${r}</td>` + "<td>" + mem[i] + "</tr></td>"
+            `<tr><td >${r}</td>` + "<td>" + reg[i] + "</tr></td>"
         );
     }
 }
@@ -30,7 +30,7 @@ function updateMemoryTable() {
         '<tr style="background-color: darkgray "><th>Memory Location</th><th>Value</th><td></td></tr>'
     );
 
-    let memAddress = 0x40;
+    let memAddress = 0;
     for (let i = 0; i < 16; i++) {
         let hex = '0x' + memAddress.toString(16);
         clist.append(
@@ -43,7 +43,7 @@ function updateMemoryTable() {
 }
 
 function memoryCheck(memAddress) {
-    let verify = read(memAddress);
+    let verify = memRead(memAddress);
     if (verify !== undefined) {
         return verify; // TODO: format instruction somehow?
     } else {

@@ -1,13 +1,13 @@
 // IMPORTANT GLOBALS
-let pc = 0;
-const MEM_OFFSET = 0x40;
+let pc = 0x0;
+//const MEM_OFFSET = 0x40;
 // IMPORTANT GLOBALS
 
 let newUpload = false, blockComment = false, fileUploaded = false;
 
 function main() {
     // Execute instruction given current PC
-    let value = executeInstruction(pc + MEM_OFFSET);
+    let value = executeInstruction(pc);
 
     // Check for exit status else increment PC based on return value
     if (isNaN(value)) {
@@ -62,7 +62,7 @@ function verifyFile() {
         fullFile += reader.result.replace(/,/g, ';').split('\n');
         const lines = fullFile.split(',');
 
-        let memoryAddress = MEM_OFFSET, fileLine = 1;
+        let memoryAddress = 0, fileLine = 1;
         let dataArea = false, finishedVerify = false;
         for (let i = 0; i < lines.length; i++) {
             // Parse instruction in each line
@@ -78,7 +78,7 @@ function verifyFile() {
             if (instruction.length > 0) console.log(instruction);
 
             // Check if space is available in memory
-            if (memoryAddress > (MEMORY_SIZE - MEM_OFFSET)) {
+            if (memoryAddress > MEMORY_SIZE) {
                 alert('Total instruction count exceeds memory limit: ' + MEMORY_SIZE + ' blocks');
                 mem = tempMem;
                 labels = tempLabels;
@@ -91,7 +91,7 @@ function verifyFile() {
                 // Dictionary has instruction
                 //let bin = opcode(instruction);
                 //instruction.append(bin);
-                write(memoryAddress, instruction);
+                memWrite(memoryAddress, instruction);
             }else if (instruction.length === 0) {
                 // Parsed line is empty
                 console.log(instruction);
@@ -116,7 +116,7 @@ function verifyFile() {
                     let tempInstruction = [];
                     for (let j = 1; j < instruction.length; j++) tempInstruction.push(instruction[j]);
                     //console.log(tempInstruction);
-                    write(memoryAddress, tempInstruction);
+                    memWrite(memoryAddress, tempInstruction);
                 } else {
                     memoryAddress--;
                 }
@@ -125,7 +125,7 @@ function verifyFile() {
                     finishedVerify = true;
                     break;
                 }
-                write(memoryAddress, instruction);
+                memWrite(memoryAddress, instruction);
             }else if (instruction[0].indexOf('.') === 0 && !dataArea) {
                 //console.log('Line is a heading: ' + instruction[0]);
                 if (instruction[0] === '.data') {
