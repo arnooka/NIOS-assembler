@@ -113,3 +113,14 @@ function resetGui() {
         labels.clear();
     }
 }
+
+switch1.addEventListener('click', function () {
+    if (interval === null && paused) {
+        debug = !debug;
+        if (debug) {
+            runButton.innerHTML = 'Step';
+        } else {
+            runButton.innerHTML = 'Run';
+        }
+    }
+});

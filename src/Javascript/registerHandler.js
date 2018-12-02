@@ -34,7 +34,7 @@ function updateMemoryTable() {
     for (let i = 0; i < 16; i++) {
         let hex = '0x' + memAddress.toString(16);
         clist.append(
-            '<tr id="tableRow' + i + '"><td>' + hex + '</td><td>' + memoryCheck(memAddress) + '</td><td>' +
+            '<tr id="tableRow + ${i}"><td>' + hex + '</td><td>' + memoryCheck(memAddress) + '</td><td>' +
             '<button id="${i}" type="button" class="btn btn-default btn-md" onclick= "memoryButton(id)">' +
             'Select Memory Location</button> </td></tr>'
         );
@@ -44,7 +44,7 @@ function updateMemoryTable() {
 
 function memoryCheck(memAddress) {
     let verify = read(memAddress);
-    if (verify !== undefined) {
+    if (verify != undefined) {
         return verify; // TODO: format instruction somehow?
     } else {
         return "No Data";
