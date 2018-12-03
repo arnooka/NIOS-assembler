@@ -7,6 +7,7 @@ function afterFile() {
 }
 
 function updateRegisterTable() {
+    // TODO: Add column for hexadecimal values of each register
     let clist = $("#registerValues"); // This reference speeds up the run time
     $("#registerValues").html("");
     clist.append(
