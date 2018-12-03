@@ -45,14 +45,6 @@ call, jmpi,
 Instructions:
 nop,
 */
-function executeOther(Oinstruction, operands) {
-    if (!Oinstruction) {
-        console.log('No instruction passed to execute other');
-        return;
-    } if (Oinstruction === 'nop') {
-        // do nothing?
-    }
-}
 
 function executeInstruction(address) {
     let data = memRead(address);
@@ -217,11 +209,31 @@ function executeInstruction(address) {
         // return to address at r31
         return regRead(31);
     } else if (instruction === 'rol') {
+        let bin = binCap(regRead(rb), 'bin');
+        let rolled = bin.substring(0, regRead(rc) - 1);
+        bin = bin.substring(regRead(rc), bin.length);
+        bin = '0b' + bin + rolled;
 
+        let result = parseInt(bin);
+        regWrite(ra, result);
+        return 1;
     } else if (instruction === 'roli') {
+        let bin = binCap(regRead(rb), 'bin');
+        let rolled = bin.substring(0, rc - 1);
+        bin = bin.substring(rc, bin.length);
+        bin = '0b' + bin + rolled;
 
+        let result = parseInt(bin);
+        regWrite(ra, result);
+        return 1;
     } else if (instruction === 'ror') {
-
+        let bin = binCap(regRead(rb), 'bin');
+        let rolled = bin.substring(bin.length - regRead(rc), bin.length);
+        bin = bin.substring(0 ,bin.length - regRead(rc) - 1 );
+        bin = '0b' + rolled + bin;
+        let result = parseInt(bin);
+        regWrite(ra, result);
+        return 1;
     } else if (instruction === 'sll') {
         let result = regRead(rb) << binCap(regRead(rc), 'int', 5);
         result = binCap(result);
@@ -463,20 +475,55 @@ function executeInstruction(address) {
         }
         return 1;
     } else if (instruction === 'ldb') {
-
-    } else if (instruction === 'ldbu') {
-
-    } else if (instruction === 'ldh') {
-
-    } else if (instruction === 'ldhu') {
-
-    } else if (instruction === 'ldw') {
-        if (isNaN(rb)) {
+        if (isNaN(data[2])) {
             rc = rb;
             rb = 0;
         }
-        let result =  parseInt(rb) + regRead(parseOutReg(rc));
-        regWrite(parseOutReg(ra), regRead(result));
+
+        let addressToRead = rb + regRead(rc);
+        let result = binCap(memRead(addressToRead), 'int', 8);
+        regWrite(ra, result);
+        return 1;
+    } else if (instruction === 'ldbu') {
+        if (isNaN(data[2])) {
+            rc = rb;
+            rb = 0;
+        }
+
+        let addressToRead = rb + regRead(rc);
+        let result = binCap(memRead(addressToRead), 'uint', 8);
+        regWrite(ra, result);
+        return 1;
+    } else if (instruction === 'ldh') {
+        if (isNaN(data[2])) {
+            rc = rb;
+            rb = 0;
+        }
+
+        let addressToRead = rb + regRead(rc);
+        let result = binCap(memRead(addressToRead), 'int', 16);
+        regWrite(ra, result);
+        return 1;
+    } else if (instruction === 'ldhu') {
+        if (isNaN(data[2])) {
+            rc = rb;
+            rb = 0;
+        }
+
+        let addressToRead = rb + regRead(rc);
+        let result = binCap(memRead(addressToRead), 'uint', 16);
+        regWrite(ra, result);
+        return 1;
+    } else if (instruction === 'ldw') {
+        if (isNaN(data[2])) {
+            rc = rb;
+            rb = 0;
+        }
+
+        let addressToRead = rb + regRead(rc);
+        let result = memRead(addressToRead);
+
+        regWrite(ra, result);
         return 1;
     } else if (instruction === 'movhi') {
 
@@ -495,21 +542,52 @@ function executeInstruction(address) {
         regWrite(ra, result);
         return 1;
     } else if (instruction === 'orhi') {
-
+        let bin = binCap(regRead(rb) | rc,  'bin');
+        bin = bin.substring(0,15);
+        let result = parseInt('0b' + bin);
+        regWrite(ra, result);
     } else if (instruction === 'ori') {
         let result = binCap(regRead(rb) | rc);
         regWrite(ra, result);
         return 1;
     } else if (instruction === 'stb') {
-
-    } else if (instruction === 'sth') {
-
-    } else if (instruction === 'stw') {
-        if (isNaN(rb)) {
+        if (isNaN(data[2])) {
             rc = rb;
             rb = 0;
         }
-        regWrite(parseOutReg(rc) + parseInt(rb), ra);
+
+        let addressToWrite = rb + regRead(rc);
+        if (addressToWrite === 0xFFFE) {
+            setSevenSegment(regRead(ra));
+        }
+        let result = binCap(regRead(ra), 'int', 8);
+        memWrite(addressToWrite , result);
+        return 1;
+    } else if (instruction === 'sth') {
+        if (isNaN(data[2])) {
+            rc = rb;
+            rb = 0;
+        }
+
+        let addressToWrite = rb + regRead(rc);
+        if (addressToWrite === 0xFFFE) {
+            setSevenSegment(regRead(ra));
+        }
+        let result = binCap(regRead(ra), 'int', 16);
+        memWrite(addressToWrite , result);
+        return 1;
+    } else if (instruction === 'stw') {
+
+        if (isNaN(data[2])) {
+            rc = rb;
+            rb = 0;
+        }
+
+        let addressToWrite = rb + regRead(rc);
+        if (addressToWrite === 0xFFFE) {
+            setSevenSegment(regRead(ra));
+        }
+        memWrite(addressToWrite , regRead(ra));
         return 1;
     } else if (instruction === 'subi') {
         let result = binCap(regRead(rb) - rc);
@@ -547,12 +625,11 @@ function setSevenSegment(instruction) {
     // 32 bits for all 4 displays, each gets 8 bits
     // mem[0xFFFE] for seven segment display
     let display = [0,0,0,0];
-    instruction = mem[parseOutReg(instruction)];
     console.log('instruction:  ' + instruction);
-    display[0] =  instruction & 0x000000DF;
-    display[1] = (instruction & 0x0000DF00) >> 8;
-    display[2] = (instruction & 0x00DF0000) >> 16;
-    display[3] = (instruction & 0xDF000000) >> 24;
+    display[0] =  instruction & 0x0000007F;
+    display[1] = (instruction & 0x00007F00) >> 8;
+    display[2] = (instruction & 0x007F0000) >> 16;
+    display[3] = (instruction & 0x7F000000) >> 24;
 
     for (let i = 0; i<4; i++) {
         if (display[i] == 0x3f) {
@@ -577,7 +654,7 @@ function setSevenSegment(instruction) {
             display[i] = '9'
         } else if (display[i] == 0x40) {
             display[i] = '-'
-        } else if (display[i] == 0xD7) {
+        } else if (display[i] == 0x77) {
             display[i] = 'A'
         } else if (display[i] == 0x7C) {
             display[i] = 'b'
@@ -589,7 +666,10 @@ function setSevenSegment(instruction) {
             display[i] = 'E'
         }  else if (display[i] == 0x71) {
             display[i] = 'F'
-        } else display[i] = '';
+        } else {
+            console.log('else for display['+i+']');
+            display[i] = '';
+        }
     }
 
 

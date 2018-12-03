@@ -5,10 +5,8 @@ _start:
 #mem[0xFFFF] = 0;  slider swtiches
 #mem[0xFFFE] = 0   seven segment display
         movia        r15, 0xFFFE
-        addi         r4,r0,0x0000065B
-        stw          r4, 0(r15)                      
-loop:
-      br loop
+        addi         r4,r0,0x7D00
+        stw          r4, 0(r15)
 end:
         br end
         .data
