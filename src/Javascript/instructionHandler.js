@@ -596,7 +596,10 @@ function executeInstruction(address) {
         return 1;
 
     } else if (instruction === 'movhi') {
-        //TODO
+        let bBin = binCap(rb, 'ubin', 16) + '0000000000000000';
+        let bVal = parseInt(bBin, 2);
+        regWrite(ra, bVal);
+        return 1;
 
     } else if (instruction === 'movi') {
         regWrite(ra, rb);
@@ -617,7 +620,11 @@ function executeInstruction(address) {
         return 1;
 
     } else if (instruction === 'orhi') {
-        //TODO
+        let cBin = binCap(rc, 'ubin', 16) + '0000000000000000';
+        let cVal = parseInt(cBin, 2);
+        let result = regRead(rb) | cVal;
+        regWrite(ra, result);
+        return 1;
 
     } else if (instruction === 'ori') {
         let result = binCap(regRead(rb) | rc);
@@ -668,7 +675,11 @@ function executeInstruction(address) {
         return 1;
 
     } else if (instruction === 'xorhi') {
-        //TODO
+        let cBin = binCap(rc, 'ubin', 16) + '0000000000000000';
+        let cVal = parseInt(cBin, 2);
+        let result = regRead(rb) ^ cVal;
+        regWrite(ra, result);
+        return 1;
 
     } else if (instruction === 'xori') {
         let result = binCap(regRead(rb) ^ rc);
