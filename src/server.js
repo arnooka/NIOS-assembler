@@ -27,7 +27,6 @@ const map = {
 };
 
 http.createServer(function (req, res) {
-    //console.log(`${req.method} ${req.url}`);
     // parse URL
     const parsedUrl = url.parse(req.url);
     // extract URL path

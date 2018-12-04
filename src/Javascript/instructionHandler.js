@@ -714,7 +714,6 @@ function setSevenSegment(instruction) {
     // 32 bits for all 4 displays, each gets 8 bits
     // mem[0xFFFE] for seven segment display
     let display = [];
-    console.log('instruction:  ' + instruction);
     display[0] =  instruction & 0x0000007F;
     display[1] = (instruction & 0x00007F00) >> 8;
     display[2] = (instruction & 0x007F0000) >> 16;
@@ -738,10 +737,7 @@ function setSevenSegment(instruction) {
         else if (display[i] === 0x5E) display[i] = 'd';
         else if (display[i] === 0x79) display[i] = 'E';
         else if (display[i] === 0x71) display[i] = 'F';
-        else {
-            console.log('else for display['+i+']');
-            display[i] = '';
-        }
+        else display[i] = '';
     }
 
     document.getElementById('segmentRow').cells[0].innerHTML = display[3];

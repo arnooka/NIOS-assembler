@@ -1,6 +1,5 @@
 // IMPORTANT GLOBALS
 let pc = 0x0;
-//const MEM_OFFSET = 0x40;
 // IMPORTANT GLOBALS
 
 let newUpload = false, blockComment = false, fileUploaded = false;
@@ -32,11 +31,9 @@ function main() {
 function verifyFile() {
     // Verify correct file type by extension
     if (asmFile === undefined) return;
-    console.clear();
-    console.log("Verifying File '" + asmFile.name + "'");
     let extension = asmFile.name.toLowerCase().substr((asmFile.name.lastIndexOf('.') + 1));
-    if (!/(asm|txt)$/ig.test(extension)) {
-        alert('Please upload a ".txt" or ".asm" file');
+    if (!/(txt)$/ig.test(extension)) {
+        alert('Please upload a ".txt" file');
         return;
     }
 
@@ -66,13 +63,8 @@ function verifyFile() {
         let dataArea = false, finishedVerify = false;
         for (let i = 0; i < lines.length; i++) {
             // Parse instruction in each line
-            let line = lines[i].trim();
-            line = line.replace(/\s\s+/g, ' ');
-            line = line.replace(/;/g, ',');
-            if (line.indexOf(':') !== -1) line = line.substr(line.indexOf(':'), line.length);
-            if (line.indexOf('#') !== -1) line = line.substr(0, line.indexOf('#'));
-
             let instruction = parseInstruction(lines[i]);
+
             if (instruction.indexOf('Unknown Register') > -1) {
                 // Current instruction set contains a register greater than 31 or an invalid register
                 alert('Line ' + fileLine + ': ' + instruction);
@@ -81,7 +73,6 @@ function verifyFile() {
                 newUpload = false;
                 return;
             }
-            if (instruction.length > 0) console.log(instruction);
 
             // Check if space is available in memory
             if (memoryAddress > MEMORY_SIZE) {
@@ -95,13 +86,14 @@ function verifyFile() {
             // Verify and add instruction to memory
             if (dict.has(instruction[0])) {
                 // Dictionary has instruction
-                //let bin = opcode(instruction);
-                //instruction.append(bin);
+                let line = lines[i].trim();
+                line = line.replace(/\s\s+/g, ' ');
+                line = line.replace(/;/g, ',');
+                if (line.indexOf(':') !== -1) line = line.substr(line.indexOf(':'), line.length);
+                if (line.indexOf('#') !== -1) line = line.substr(0, line.indexOf('#'));
                 instruction[instruction.length] = line;
                 memWrite(memoryAddress, instruction);
             }else if (instruction.length === 0) {
-                // Parsed line is empty
-                console.log(instruction);
                 memoryAddress--;
             } else if (instruction[0].indexOf(':') > -1) {
                 // Label found: Make sure ':' is the last character of the label
@@ -122,7 +114,6 @@ function verifyFile() {
                 if (instruction.length > 1) {
                     let tempInstruction = [];
                     for (let j = 1; j < instruction.length; j++) tempInstruction.push(instruction[j]);
-                    //console.log(tempInstruction);
                     memWrite(memoryAddress, tempInstruction);
                 } else {
                     memoryAddress--;
@@ -134,9 +125,7 @@ function verifyFile() {
                 }
                 memWrite(memoryAddress, instruction);
             }else if (instruction[0].indexOf('.') === 0 && !dataArea) {
-                //console.log('Line is a heading: ' + instruction[0]);
                 if (instruction[0] === '.data') {
-                    //console.log('Found .data heading');
                     dataArea = true;
                 }
                 memoryAddress--;
@@ -159,11 +148,10 @@ function verifyFile() {
         if (finishedVerify) {
             customTxt.innerHTML = asmFile.name;
             fileUploaded = true;
+            updateMemoryTable();
         }
         if (!debug) runButton.innerHTML = 'Run';
         newUpload = false;
-        console.log(labels);
-        console.log(mem);
     };
 }
 
@@ -230,15 +218,8 @@ function registerCheck(operand) {
 
 function setSliderSwitch(sliderNumber) {
     // mem[0xFFFF] for slider swtiches, last 4 bits are the only ones used
-
-    if (sliderNumber === 0) {
-        mem[0xFFFF] = mem[0xFFFF] ^ 0x1;
-    } else if (sliderNumber === 1) {
-        mem[0xFFFF] = mem[0xFFFF] ^ 0x2;
-    } else if (sliderNumber === 2) {
-        mem[0xFFFF] = mem[0xFFFF] ^ 0x4;
-    } else if (sliderNumber === 3) {
-        mem[0xFFFF] = mem[0xFFFF] ^ 0x8;
-    }
-
+    if (sliderNumber === 0) mem[0xFFFF] = mem[0xFFFF] ^ 0x1;
+    else if (sliderNumber === 1) mem[0xFFFF] = mem[0xFFFF] ^ 0x2;
+    else if (sliderNumber === 2) mem[0xFFFF] = mem[0xFFFF] ^ 0x4;
+    else if (sliderNumber === 3) mem[0xFFFF] = mem[0xFFFF] ^ 0x8;
 }
