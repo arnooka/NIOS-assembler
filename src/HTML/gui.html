@@ -32,30 +32,32 @@
         <button type="button" id="debugBtn" class="btn btn-default btn-md">Debug</button>
     </div>
 
-    <div class = "segmentDisplay">
-    <table id="segmentDisplay" class="table table-striped carrier-table">
-        <tr id="segmentRow"><th style ="border-right: 1px solid black" id="seg0">-</th>
-            <th style ="border-right: 1px solid black" id="seg1">-</th>
-            <th style ="border-right: 1px solid black" id="seg2">-</th>
-            <th id="seg3">-</th></tr>
-    </table>
-        
-    <label class="switch" id="switch1" >
-        <input type="checkbox" onclick="setSliderSwitch(3)">
-        <span class="slider"></span>
-    </label>
-    <label class="switch" >
-        <input type="checkbox" onclick="setSliderSwitch(2)">
-        <span class="slider"></span>
-    </label>
-    <label class="switch" >
-        <input type="checkbox" onclick="setSliderSwitch(1)">
-        <span class="slider"></span>
-    </label>
-    <label class="switch" >
-        <input type="checkbox" onclick="setSliderSwitch(0)">
-        <span class="slider"></span>
-    </label>
+    <div class = "IO">
+        <table id="segmentDisplay" class="table table-striped carrier-table">
+            <tr id="segmentRow" align="center">
+                <td style ="border-right: 1px solid black; width: 25%" id="seg0">-</td>
+                <td style ="border-right: 1px solid black; width: 25%" id="seg1">-</td>
+                <td style ="border-right: 1px solid black; width: 25%" id="seg2">-</td>
+                <td style="width: 25%" id="seg3">-</td>
+            </tr>
+        </table>
+
+        <label class="switch" id="switch1" >
+            <input type="checkbox" onclick="setSliderSwitch(3)">
+            <span class="slider"></span>
+        </label>
+        <label class="switch" >
+            <input type="checkbox" onclick="setSliderSwitch(2)">
+            <span class="slider"></span>
+        </label>
+        <label class="switch" >
+            <input type="checkbox" onclick="setSliderSwitch(1)">
+            <span class="slider"></span>
+        </label>
+        <label class="switch" >
+            <input type="checkbox" onclick="setSliderSwitch(0)">
+            <span class="slider"></span>
+        </label>
     </div>
 
     <div class="memoryDisplay">

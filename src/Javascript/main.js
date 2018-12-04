@@ -66,6 +66,12 @@ function verifyFile() {
         let dataArea = false, finishedVerify = false;
         for (let i = 0; i < lines.length; i++) {
             // Parse instruction in each line
+            let line = lines[i].trim();
+            line = line.replace(/\s\s+/g, ' ');
+            line = line.replace(/;/g, ',');
+            if (line.indexOf(':') !== -1) line = line.substr(line.indexOf(':'), line.length);
+            if (line.indexOf('#') !== -1) line = line.substr(0, line.indexOf('#'));
+
             let instruction = parseInstruction(lines[i]);
             if (instruction.indexOf('Unknown Register') > -1) {
                 // Current instruction set contains a register greater than 31 or an invalid register
@@ -91,6 +97,7 @@ function verifyFile() {
                 // Dictionary has instruction
                 //let bin = opcode(instruction);
                 //instruction.append(bin);
+                instruction[instruction.length] = line;
                 memWrite(memoryAddress, instruction);
             }else if (instruction.length === 0) {
                 // Parsed line is empty

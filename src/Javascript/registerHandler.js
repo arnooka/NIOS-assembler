@@ -46,7 +46,7 @@ function updateMemoryTable() {
 function memoryCheck(memAddress) {
     let verify = memRead(memAddress);
     if (verify !== undefined) {
-        return verify; // TODO: format instruction somehow?
+        return verify[verify.length - 1];
     } else {
         return "No Data";
     }
