@@ -11,7 +11,7 @@
 ### Contributors
 
 - Jake Ediger ([jediger51](https://git.unl.edu/jediger51))
-- Alex Czarnick ([apz2016](https://git.unl.edu/apz2016))
-- Alex Michael ([alexmichael444](https://git.unl.edu/alexmichael444))
-- Avinash Nooka ([arnooka](https://git.unl.edu/arnooka))
-- Raksharth Choudhary ([raksharthchoudhary](https://git.unl.edu/raksharthchoudhary))
+- Alex Czarnick ([apz2016](https://github.com/apz2016))
+- Alex Michael ([alexmichael444](https://github.com/amichael444))
+- Avinash Nooka ([arnooka](https://github.com/arnooka))
+- Raksharth Choudhary ([raksharthchoudhary](https://github.com/raksharthchoudhary))
