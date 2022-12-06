@@ -14,4 +14,3 @@
 - Alex Czarnick ([aczarnick](https://github.com/aczarnick))
 - Alex Michael ([alexmichael444](https://github.com/amichael444))
 - Avinash Nooka ([arnooka](https://github.com/arnooka))
-- Raksharth Choudhary ([raksharthchoudhary](https://github.com/raksharthchoudhary))
