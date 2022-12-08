@@ -10,7 +10,7 @@
 ```cmd
 > node server.js
 ```
-3) In a browser, type localhost:8001 as a URL to run the project
+3) In a browser, go to https://localhost:8001 to access the running project
 
 ### Contributors
 
